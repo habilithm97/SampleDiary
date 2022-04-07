@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_marginTop="8dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginBottom="5dp"
+
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="5dp"
+    app:cardCornerRadius="10dp">
+
+    <LinearLayout
+        android:id="@+id/layout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/moodImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="5dp"
+            android:src="@drawable/smile" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/contentsTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="내용"
+                android:textSize="24sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:id="@+id/weatherImg"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/weather" />
+
+                <ImageView
+                    android:id="@+id/pictureImg"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@+id/weatherImg"
+                    android:src="@drawable/picture" />
+
+                <TextView
+                    android:id="@+id/locationTv"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/pictureImg"
+                    android:gravity="center"
+                    android:text="용산구 홍길동" />
+
+                <TextView
+                    android:id="@+id/dateTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/locationTv"
+                    android:text="22년 2월 16일"
+                    android:layout_alignParentRight="true"
+                    android:gravity="right"
+                    android:layout_marginRight="5dp"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/pictureImg2"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
+            android:padding="5dp"
+            android:src="@drawable/noimagefound" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/contentsTv2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="내용"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:textSize="24sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:id="@+id/moodImg2"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="5dp"
+                    android:src="@drawable/smile" />
+
+                <ImageView
+                    android:id="@+id/weatherImg2"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_toRightOf="@+id/moodImg2"
+                    android:src="@drawable/weather"
+                    android:layout_margin="5dp" />
+
+                <TextView
+                    android:id="@+id/locationTv2"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/weatherImg2"
+                    android:gravity="center"
+                    android:text="용산구 홍길동" />
+
+                <TextView
+                    android:id="@+id/dateTv2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/locationTv2"
+                    android:text="22년 2월 16일"
+                    android:layout_alignParentRight="true"
+                    android:gravity="right"
+                    android:layout_marginRight="5dp"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
