@@ -16,8 +16,18 @@
             android:id="@+id/weatherIcon"
             android:layout_width="25dp"
             android:layout_height="25dp"
+            android:src="@mipmap/ic_launcher"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true" />
+
+        <TextView
+            android:id="@+id/weatherTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="날씨"
+            android:layout_toRightOf="@+id/weatherIcon"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp" />
 
         <TextView
             android:id="@+id/dateTv"

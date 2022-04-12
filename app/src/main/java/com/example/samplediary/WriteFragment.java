@@ -26,7 +26,7 @@ public class WriteFragment extends Fragment {
     onTabItemSelectedListener listener;
     OnRequestListener requestListener;
 
-    TextView dateTv, locationTv;
+    TextView dateTv, locationTv, weatherTv;
     ImageView weatherIcon;
 
     @Override
@@ -75,6 +75,7 @@ public class WriteFragment extends Fragment {
         weatherIcon = rootView.findViewById(R.id.weatherIcon);
         dateTv = rootView.findViewById(R.id.dateTv);
         locationTv = rootView.findViewById(R.id.locationTv);
+        weatherTv = rootView.findViewById(R.id.weatherTv);
 
         Button saveBtn = rootView.findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -124,18 +125,25 @@ public class WriteFragment extends Fragment {
         if (data != null) {
             if (data.equals("맑음")) {
                 weatherIcon.setImageResource(R.drawable.weather_sun);
+                weatherTv.setText("맑음");
             } else if (data.equals("구름 조금")) {
                 weatherIcon.setImageResource(R.drawable.weather_mini_cloud);
+                weatherTv.setText("구름 조금");
             } else if (data.equals("구름 많음")) {
                 weatherIcon.setImageResource(R.drawable.weather_sun_cloud);
+                weatherTv.setText("구름 많음");
             } else if (data.equals("흐림")) {
                 weatherIcon.setImageResource(R.drawable.weather_cloud);
+                weatherTv.setText("흐림");
             } else if (data.equals("비")) {
                 weatherIcon.setImageResource(R.drawable.weather_rain);
+                weatherTv.setText("비");
             } else if (data.equals("눈/비")) {
                 weatherIcon.setImageResource(R.drawable.weather_snow_rain);
+                weatherTv.setText("눈/비");
             } else if (data.equals("눈")) {
                 weatherIcon.setImageResource(R.drawable.weather_snow);
+                weatherTv.setText("눈");
             } else {
                 Log.d(TAG, "알 수 없는 날씨 : " + data);
             }
