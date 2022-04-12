@@ -1,6 +1,10 @@
 package com.example.samplediary;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +32,13 @@ public class WriteFragment extends Fragment {
     OnRequestListener requestListener;
 
     TextView dateTv, locationTv, weatherTv;
-    ImageView weatherIcon;
+    ImageView weatherIcon, pictureInput;
+
+    boolean isPhotoCaptured;
+    boolean isPhotoFileSaved;
+    boolean isPhotoCanceled;
+
+    int selectedPhotoMenu;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -76,6 +87,19 @@ public class WriteFragment extends Fragment {
         dateTv = rootView.findViewById(R.id.dateTv);
         locationTv = rootView.findViewById(R.id.locationTv);
         weatherTv = rootView.findViewById(R.id.weatherTv);
+        EditText contentEdt = rootView.findViewById(R.id.contentsEdt);
+
+        pictureInput = rootView.findViewById(R.id.pictureInput);
+        pictureInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isPhotoCaptured || isPhotoFileSaved) { // 이미 사진이 있거나 사진 파일이 저장된 경우
+                    showDialog(AppConstants.CONTENT_PHOTO_EX);
+                } else { // 사진이 없는 경우
+                    showDialog(AppConstants.CONTENT_PHOTO);
+                }
+            }
+        });
 
         Button saveBtn = rootView.findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -152,6 +176,76 @@ public class WriteFragment extends Fragment {
 
     public void setAddress(String data) {
         locationTv.setText(data);
+    }
+
+    public void showDialog(int id) {
+        AlertDialog.Builder builder = null;
+
+        switch (id) {
+            case AppConstants.CONTENT_PHOTO: // 사진이 없는 경우
+                builder = new AlertDialog.Builder(context);
+                builder.setTitle("사진 메뉴 선택");
+                // setSingleChoiceItems(배열, 라디오 버튼의 체크 위치, 선택 시 발생하는 이벤트)
+                builder.setSingleChoiceItems(R.array.array_photo, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichBtn) {
+                        selectedPhotoMenu = whichBtn;
+                    }
+                });
+                builder.setPositiveButton("선택", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (selectedPhotoMenu == 0) {
+                           //showPhotoCaptureActivity();
+                        } else if (selectedPhotoMenu == 1) {
+                            //showPhotoSelectionActivity();
+                        }
+                    }
+                });
+                builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                break;
+
+
+            case AppConstants.CONTENT_PHOTO_EX: // 이미 사진이 있거나 사진 파일이 저장된 경우
+               builder = new AlertDialog.Builder(context);
+                builder.setTitle("사진 메뉴 선택");
+                builder.setSingleChoiceItems(R.array.array_photo, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichBtn) {
+                        selectedPhotoMenu = whichBtn;
+                    }
+                });
+                builder.setPositiveButton("선택", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (selectedPhotoMenu == 0) {
+                            //showPhtoCaptureActivity();
+                        } else if (selectedPhotoMenu == 1) {
+                            //showPhotoSelectionActivity();
+                        } else if (selectedPhotoMenu == 2) {
+                            isPhotoCanceled = true;
+                            isPhotoCaptured = false;
+
+                            pictureInput.setImageResource(R.drawable.cube);
+                        }
+                    }
+                });
+                builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                break;
+
+            default:
+                break;
+        }
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void println(String data) {
