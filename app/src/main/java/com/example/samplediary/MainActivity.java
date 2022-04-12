@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         url += "?gridx=" + Math.round(gridX);
         url += "&gridy=" + Math.round(gridY);
 
-        Map<String,String> params = new HashMap<String,String>(); 
+        Map<String,String> params = new HashMap<String,String>();
         MyApplication.send(AppConstants.REQ_WEATHER_BY_GRID, Request.Method.GET, url, params, this);
     }
 
@@ -281,11 +281,8 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         }
     }
 
-    /*
-    *GeoCoder 클래스(주소 -> 좌표)
-     -주소를 지리학적 좌표로 변환할 수 있음 -> 이러한 과정을 지오 코딩(반대 과정은 역 지오 코딩이라고함)
-     */
-    public void getCurrentAddress() { // 현재 위치를 이용해 주소를 확인하는 메서드
+    //GeoCoder 클래스(주소 -> 좌표) : 주소를 지리학적 좌표로 변환할 수 있음 -> 이러한 과정을 지오 코딩(반대 과정은 역 지오 코딩이라고함)
+    public void getCurrentAddress() { // 현재 위치를 이용해 주소를 확인
         // Geocoder 클래스를 이용해 현재 위치를 주소로 변환하는 것을 확인할 수 있음(역 지오 코딩)
         Geocoder geocoder = new Geocoder(this, Locale.getDefault()); // Locale : 명확한 지리적/언어적 지역으로서 숫자와 날짜 같은 정보를 지역에 어울리는 표현법으로 조정함
         List<Address> addresses = null;
@@ -297,10 +294,8 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         }
         if(addresses != null && addresses.size() > 0) {
             Address address = addresses.get(0);
-            String currentAddress = address.getLocality() + " " + address.getSubLocality(); // 현재 위치(군/구  읍/면/동)
-            String adminArea = address.getAdminArea(); // 시/도명
-            String country = address.getCountryName(); // 나라명
-            println("주소 : " + country + " " + adminArea + " " + currentAddress);
+            String currentAddress = address.getAdminArea() + " " + address.getSubLocality(); // 시 군/구
+            println("주소 : " + currentAddress);
 
             if(writeFragment != null) {
                 writeFragment.setAddress(currentAddress);

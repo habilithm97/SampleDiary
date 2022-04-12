@@ -41,7 +41,8 @@
             android:id="@+id/locationTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="용산구 홍길동"
+            android:text="서울특별시 노진구"
+            android:textSize="12sp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true" />
 
