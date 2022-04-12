@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.samplediary.R;
 import com.github.channguyen.rsv.RangeSliderView;
@@ -25,7 +26,7 @@ public class WriteFragment extends Fragment {
     onTabItemSelectedListener listener;
     OnRequestListener requestListener;
 
-    TextView dateTv;
+    TextView dateTv, locationTv;
     ImageView weatherIcon;
 
     @Override
@@ -63,6 +64,8 @@ public class WriteFragment extends Fragment {
         if(requestListener != null)
         {
             requestListener.onRequest("getCurrentLocation"); // 현재 위치 요청하기!!!
+            println("현재 위치 요청함");
+            //Toast.makeText(getContext(), "현재 위치 요청함", Toast.LENGTH_SHORT).show();
         }
         return rootView;
     }
@@ -71,6 +74,7 @@ public class WriteFragment extends Fragment {
 
         weatherIcon = rootView.findViewById(R.id.weatherIcon);
         dateTv = rootView.findViewById(R.id.dateTv);
+        locationTv = rootView.findViewById(R.id.locationTv);
 
         Button saveBtn = rootView.findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -136,5 +140,13 @@ public class WriteFragment extends Fragment {
                 Log.d(TAG, "알 수 없는 날씨 : " + data);
             }
         }
+    }
+
+    public void setAddress(String data) {
+        locationTv.setText(data);
+    }
+
+    public void println(String data) {
+        Log.d(TAG, data);
     }
 }

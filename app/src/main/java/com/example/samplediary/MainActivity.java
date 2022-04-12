@@ -2,8 +2,11 @@ package com.example.samplediary;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -12,9 +15,11 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.pedro.library.AutoPermissions;
 import com.pedro.library.AutoPermissionsListener;
 import com.stanfy.gsonxml.GsonXml;
 import com.stanfy.gsonxml.GsonXmlBuilder;
@@ -23,6 +28,7 @@ import com.stanfy.gsonxml.XmlParserCreator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.security.Permission;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +47,6 @@ import java.util.Map;
  -XML : 사람과 기계가 모두 읽을 수 있는 형식으로 데이터를 기술할 수 있도록 데이터를 문서화하는 규칙을 정의한 마크업 언어
   -> 인터넷을 통한 데이터 교환 시, 단순함/범용성/사용성을 제공하는 것이 XML을 사용하는 가장 큰 목적임
  -Pull Parser : 특정 위치까지 파싱되어 내용을 처리한 후 계속 파싱할 것인지 멈출 것인지를 개발자가 제어할 수 있는 특징이 있음
-
 */
 
 public class MainActivity extends AppCompatActivity implements onTabItemSelectedListener, OnRequestListener, AutoPermissionsListener, MyApplication.OnResponseListener {
@@ -55,11 +60,10 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
     BottomNavigationView bottomNavigationView;
     
     Location currentLocation; // 현재 위치를 담고 있음
+    String currentWeather; // 현재 날씨를 담고 있음
     GPSListener gpsListener; // 위치 정보를 수신함
 
-    int locationCount = 0; // 위치 정보를 확인한 횟수(위치를 한 번 확인한 후에는 위치 요청을 취소할 수 있도록
-
-    String currentWeather;
+    int locationCount = 0; // 위치 정보를 확인한 횟수(위치를 한 번 확인한 후에는 위치 요청을 취소할 수 있도록)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                         return false;
                     }
                 });
+        // 앱이 처음 시작될 때 AutoPermissions 승인 요청을 처리하기 위해
+        AutoPermissions.Companion.loadAllPermissions(this, 101);
     }
 
     public void onRequest(String command) { // 두 번째 프래그먼트에서 호출됨
@@ -111,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         if (writeFragment != null) {
             writeFragment.setDateString(currentDateString); // 두 번째 프래그먼트 상단에 현재 날짜를 표시함
         }
+
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         try {
             currentLocation = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER); // 위치 관리자의 위치 제공자로 최근 위치 정보를 확인해서 현재 위치 변수에 할당함
@@ -119,10 +126,11 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                 double longitude = currentLocation.getLongitude();
                 String message = "최근 위치 : 위도 : " + latitude + "\n경도:" + longitude;
                 println(message);
+                //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
                 // 현재 위치가 확인되면 호출됨
                 getCurrentWeather(); // 현재 위치를 이용해서 날씨 확인
-                //getCurrentAddress(); // 현재 위치를 이용해서 주소 확인
+                getCurrentAddress(); // 현재 위치를 이용해서 주소 확인
              }
 
             gpsListener = new GPSListener(); // 위치 리스너 객체 생성, 요청된 위치를 수신하기 위함
@@ -148,12 +156,6 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         }
     }
 
-    @Override
-    public void onDenied(int i, String[] strings) {}
-
-    @Override
-    public void onGranted(int i, String[] strings) {}
-
     class GPSListener implements LocationListener {
 
         @Override
@@ -168,7 +170,22 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
 
             // 현재 위치가 확인되면 호출됨
             getCurrentWeather(); // 현재 위치를 이용해서 날씨 확인
-            //getCurrentAddress(); // 현재 위치를 이용해서 주소 확인
+            getCurrentAddress(); // 현재 위치를 이용해서 주소 확인
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(@NonNull String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(@NonNull String provider) {
+
         }
     }
 
@@ -184,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
 
     public void getCurrentWeather() { // 현재 날씨 가져오기
         // GridUtill 객체의 getGrid() 메서드로 격자 번호를 확인
-        Map<String, Double> gridMap = GridUtil.getGrid(currentLocation.getLatitude(), currentLocation.getLongitude()); // 여기는 String, Double 인데
+        Map<String, Double> gridMap = GridUtil.getGrid(currentLocation.getLatitude(), currentLocation.getLongitude());
 
         double gridX = gridMap.get("x");
         double gridY = gridMap.get("y");
@@ -199,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         url += "?gridx=" + Math.round(gridX);
         url += "&gridy=" + Math.round(gridY);
 
-        Map<String,String> params = new HashMap<String,String>(); // 여기는 String, String...?
+        Map<String,String> params = new HashMap<String,String>(); 
         MyApplication.send(AppConstants.REQ_WEATHER_BY_GRID, Request.Method.GET, url, params, this);
     }
 
@@ -264,13 +281,52 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         }
     }
 
+    /*
+    *GeoCoder 클래스(주소 -> 좌표)
+     -주소를 지리학적 좌표로 변환할 수 있음 -> 이러한 과정을 지오 코딩(반대 과정은 역 지오 코딩이라고함)
+     */
     public void getCurrentAddress() { // 현재 위치를 이용해 주소를 확인하는 메서드
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault()); // Geocoder 클래스를 이용해 현재 위치를 주소로 변환하는 것을 확인할 수 있음
+        // Geocoder 클래스를 이용해 현재 위치를 주소로 변환하는 것을 확인할 수 있음(역 지오 코딩)
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault()); // Locale : 명확한 지리적/언어적 지역으로서 숫자와 날짜 같은 정보를 지역에 어울리는 표현법으로 조정함
         List<Address> addresses = null;
 
+        try {
+            addresses = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(addresses != null && addresses.size() > 0) {
+            Address address = addresses.get(0);
+            String currentAddress = address.getLocality() + " " + address.getSubLocality(); // 현재 위치(군/구  읍/면/동)
+            String adminArea = address.getAdminArea(); // 시/도명
+            String country = address.getCountryName(); // 나라명
+            println("주소 : " + country + " " + adminArea + " " + currentAddress);
+
+            if(writeFragment != null) {
+                writeFragment.setAddress(currentAddress);
+            }
+        }
     }
 
     private void println(String data) {
         Log.d(TAG, data);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        AutoPermissions.Companion.parsePermissions(this, requestCode, permissions, this);
+    }
+
+    @Override
+    public void onDenied(int i, String[] permissions) {
+        //Toast.makeText(this, "권한이 거부됨 : " + permissions.length, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onGranted(int i, String[] permissions) {
+        //Toast.makeText(this, "권한이 승인됨 : " + permissions.length, Toast.LENGTH_SHORT).show();
+    }
+
 }
