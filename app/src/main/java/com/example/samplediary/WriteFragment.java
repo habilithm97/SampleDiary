@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
@@ -194,9 +195,11 @@ public class WriteFragment extends Fragment {
 
         switch (id) {
             case AppConstants.CONTENT_PHOTO_EX: // 이미 사진이 있거나 사진 파일이 저장된 경우 -> +삭제하기 까지
+                // 사진
+
                 builder = new AlertDialog.Builder(context);
                 builder.setTitle("사진 메뉴 선택");
-                builder.setSingleChoiceItems(R.array.array_photo, 0, new DialogInterface.OnClickListener() {
+                builder.setSingleChoiceItems(R.array.array_photo_ex, 0, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int whichBtn) {
                         selectedPhotoMenu = whichBtn;
@@ -299,14 +302,38 @@ public class WriteFragment extends Fragment {
         if(intent != null) {
             switch (requestCode) {
                 case AppConstants.REQ_PHOTO_CAPTURE: // 사진 찍기 메뉴를 선택했을 경우
-                Log.d(TAG, "사진 찍기 메뉴의 onActivityResult() ");
-                Log.d(TAG, "resultCode : " + resultCode);
+                    Log.d(TAG, "사진 찍기 메뉴의 onActivityResult() ");
+                    Log.d(TAG, "resultCode : " + resultCode);
 
-                Bitmap resultPhotoBitmap = decodeSampleBitmapFromResource(file, pictureInput.getWidth(), pictureInput.getHeight());
-                pictureInput.setImageBitmap(resultPhotoBitmap);
+                    Bitmap resultPhotoBitmap = decodeSampleBitmapFromResource(file, pictureInput.getWidth(), pictureInput.getHeight());
+                    pictureInput.setImageBitmap(resultPhotoBitmap);
 
-                break;
+                    // 사진이 넣었기 때문에 사진 유무 상태를 변경
+                    isPhotoCaptured = true;
+                    isPhotoFileSaved = true;
+
+                    break;
+
+                case AppConstants.REQ_PHOTO_SELECTION: // 앨범에서 선택하기 메뉴를 선택했을 경우
+                    Log.d(TAG, "앨범에서 선택하기 메뉴의 onActivityResult() ");
+
+                    Uri selectionImage = intent.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+                    Cursor cursor = context.getContentResolver().query(selectionImage, filePathColumn, null, null, null);
+                    cursor.moveToFirst();
+
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String filePath = cursor.getString(columnIndex);
+                    cursor.close();
+
+                    resultPhotoBitmap = decodeSampleBitmapFromResource(new File(filePath), pictureInput.getWidth(), pictureInput.getHeight());
+                    pictureInput.setImageBitmap(resultPhotoBitmap);
+                    isPhotoCaptured = true;
+
+                    break;
             }
+
         }
     }
 
