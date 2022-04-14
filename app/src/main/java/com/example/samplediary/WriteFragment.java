@@ -274,7 +274,7 @@ public class WriteFragment extends Fragment {
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); // 미리 Intent 객체에 정의된 카메라 앱 실행 액션 정보(시스템에게 요청할거임)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // Intent에 어떤 파일을 저장할 것인지 지정 및 파일의 Uri 정보 설정
-       if(intent.resolveActivity(context.getPackageManager()) != null) { // 실행 가능한지 확인(카메라 앱 유무 확인)
+        if(intent.resolveActivity(context.getPackageManager()) != null) { // 실행 가능한지 확인(카메라 앱 유무 확인)
             startActivityForResult(intent, AppConstants.REQ_PHOTO_CAPTURE); // 카메라 앱 화면 실행
         }
     }
@@ -310,28 +310,46 @@ public class WriteFragment extends Fragment {
         }
     }
 
+    // 대용량 Bitmap을 Exception 없이 효과적으로 로딩하기
     public static Bitmap decodeSampleBitmapFromResource(File res, int reqWidth, int reqHeight) {
+        /* BitmapFactory 클래스는 Bitmap을 만들 수 있는 Decoding 메서드들을 제공하는데, 이미지 데이터 소스에 따라 가장 적합한 Decoding 방법을 선택함
+        *Decoding 메서드
+         -decodeByteArray() : byte[] 배열을 해석해서 Bitmap을 생성함
+         -decodeFile() : 파일 경로의 파일을 Bitmap으로 생성함
+         -decodeResource() : res 폴더에 저장된 이미지를 Bitmap으로 생성함
+         -decodeStream() : InputStream으로 Bitmap을 생성함
+         */
         final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
+        options.inJustDecodeBounds = true; // true일 경우, 이미지의 크기만 구해서 옵션에 설정함
         BitmapFactory.decodeFile(res.getAbsolutePath(), options);
 
+        /*
+        *int inSampleSize
+         -이미지 파일을 Decoding 할 때 원본 이미지 크기대로 Decoding 할지, 축소해서 Decoding 할지를 지정함
+         -값은 1 또는 2의 거듭 제곱 값이 들어갈 수 있음(그 외의 값일 경우 가장 가까운 2의 거듭 제곱 값으로 내림되어 실행됨
+         -값이 1일 경우(또는 1보다 작을 경우) : 원본 이미지 크기로
+         -값이 2일 경우(또는 2보다 클 경우) : 가로/세로 픽셀을 해당 값 만큼 나눈 크기로
+          ex) 값을 2로 지정했을 경우 이미지의 가로/세로 값이 각각 2로 나누어진 크기로 설정되어 실제 이미지 크기는 원본 이미지의 1/4가 됨됨
+        */
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-        options.inJustDecodeBounds = false;
+        options.inJustDecodeBounds = false; // 로드하기 위해서 true에서 false로 설정함
 
         return BitmapFactory.decodeFile(res.getAbsolutePath(), options);
     }
 
+    // 로드하려는 이미지가 실제 필요한 사이즈보다 큰지 체크하고
+    // 실제 필요한 사이즈로 이미지를 조절하기
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
+        final int height = options.outHeight; // 높이
+        final int width = options.outWidth; // 너비
+        int inSampleSize = 1; // 원본 이미지
 
-        if(height > reqHeight || width > reqWidth) {
+        if(height > reqHeight || width > reqWidth) { // 필요한 사이즈보다 크면
             final int halfHeight = height;
             final int halfWidth = width;
 
             while((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
-                inSampleSize *= 2;
+                inSampleSize *= 2; // 이미지 축소
             }
         }
         return inSampleSize;
