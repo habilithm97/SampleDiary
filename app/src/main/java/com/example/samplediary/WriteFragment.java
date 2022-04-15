@@ -221,7 +221,6 @@ public class WriteFragment extends Fragment {
                             // 사진이 삭제했기 때문에 사진 유무 상태를 변경
                             isPhotoCaptured = false;
                             isPhotoFileSaved = false;
-
                         }
                     }
                 });
@@ -319,17 +318,31 @@ public class WriteFragment extends Fragment {
 
                     break;
 
+                    /*
+                    *MediaStore
+                     -안드로이드 시스템에서 제공하는 미디어 데이터 데이터 베이스
+                     -시스템은 파일시스템에 저장되어 있는 미디어 파일들을 이 데이터 베이스에 추가하여 여러 앱에서 사용할 수 있도록함
+                     -시스템이 제공하는 provider를 사용해서 미디어 파일을 query 할 수 있음
+                     */
                 case AppConstants.REQ_PHOTO_SELECTION: // 앨범에서 선택하기 메뉴를 선택했을 경우
                     Log.d(TAG, "앨범에서 선택하기 메뉴의 onActivityResult() ");
 
-                    Uri selectionImage = intent.getData();
-                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                    Uri selectionImage = intent.getData(); // 가져올 데이터의 주소
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA}; // 가져올 컬럼 이름 목록
 
+                    /*
+                    *getContentResolver.query(Uri, projection, selection, selectionArgs, sortOrder)
+                     -Uri : table_name이라는 이름의 provider 테이블에 매핑됨, content://scheme 방식의 원하는 데이터를 가져오기 위해 정해진 주소
+                     -projection : 검색된 각 행에 포함되어야 하는 열의 배열, 가져올 컬럼 이름 목록으로 null이면 모든 컬럼임
+                     -selection : 행을 선택하는 기준을 지정함, where 절에 해당하는 내용
+                     -selectionArgs : selection에서 ?로 표시한 곳에 들어갈 데이터
+                     -sortOrder : 리턴된 Cursor 내에 행이 나타나는 순서를 지정함, 정렬을 위한 구문
+                     */
                     Cursor cursor = context.getContentResolver().query(selectionImage, filePathColumn, null, null, null);
                     cursor.moveToFirst();
 
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String filePath = cursor.getString(columnIndex);
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]); // cursor를 사용해 컬럼 인덱스 가져오기
+                    String filePath = cursor.getString(columnIndex); // cursor를 사용해 가져온 컬럼 인텍스를 문자열로 변환하기
                     cursor.close();
 
                     resultPhotoBitmap = decodeSampleBitmapFromResource(new File(filePath), pictureInput.getWidth(), pictureInput.getHeight());
