@@ -216,7 +216,12 @@ public class WriteFragment extends Fragment {
                             isPhotoCanceled = true;
                             isPhotoCaptured = false;
 
-                            pictureInput.setImageResource(R.drawable.cube);
+                            pictureInput.setImageResource(R.drawable.imagetoset);
+
+                            // 사진이 삭제했기 때문에 사진 유무 상태를 변경
+                            isPhotoCaptured = false;
+                            isPhotoFileSaved = false;
+
                         }
                     }
                 });
