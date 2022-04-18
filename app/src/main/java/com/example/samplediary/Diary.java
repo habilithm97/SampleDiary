@@ -1,6 +1,6 @@
 package com.example.samplediary;
 
-public class Card {
+public class Diary {
 
     int _id;
     String address;
@@ -12,7 +12,7 @@ public class Card {
     String picture;
     String createDate; // 작성 일자
 
-    public Card(int _id, String address, String weather, String location_x, String location_y, String contents, String mood, String picture, String createDate) {
+    public Diary(int _id, String address, String weather, String location_x, String location_y, String contents, String mood, String picture, String createDate) {
         this._id = _id;
         this.address = address;
         this.weather = weather;

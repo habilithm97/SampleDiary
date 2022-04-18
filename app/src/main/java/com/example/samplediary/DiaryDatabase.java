@@ -61,7 +61,7 @@ public class DiaryDatabase { // 데이터 베이스 클래스
         Cursor cursor = null;
         try {
             cursor = db.rawQuery(SQL, null);
-            println("커서 카운트 : " + cursor.getCount());
+            println("cursor count : " + cursor.getCount());
         } catch (Exception e) {
             Log.e(TAG, "executeQuery 호출 중 오류가 발생함. ", e);
         }

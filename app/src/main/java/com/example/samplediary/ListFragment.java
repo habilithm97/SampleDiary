@@ -1,5 +1,6 @@
 package com.example.samplediary;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -16,13 +17,17 @@ import android.widget.Button;
 import android.widget.Toast;
 
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 import lib.kingja.switchbutton.SwitchMultiButton;
 
 public class ListFragment extends Fragment {
     private static final String TAG = "ListFragment";
 
     RecyclerView recyclerView;
-    CardAdapter adapter;
+    DiaryAdapter adapter;
 
     Context context;
 
@@ -90,39 +95,82 @@ public class ListFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new CardAdapter();
+        adapter = new DiaryAdapter();
 
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Card(0, "서울시 강남구 홍길동", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
 
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new OnCardItemClickListener() {
             @Override
-            public void onItemClick(CardAdapter.ViewHolder holder, View view, int position) {
-                Card item = adapter.getItem(position);
+            public void onItemClick(DiaryAdapter.ViewHolder holder, View view, int position) {
+                Diary item = adapter.getItem(position);
                 Toast.makeText(getContext(), "아이템 선택 : " + item.getContents(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    public int loadDiaryListData()_ {
-        AppConstants.println("저장된 데이터를 로드함. ");
-        String sql = "select -id, WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE, CREATE_DATE, MODIFY_DATE from "
-                + DiaryDatabase.TABLE_DIARY + " order by CREATE_DATE desc";
+    public int loadDiaryListData() { // 저장된 데이터를 불러와서 리스트로 보여줌
+        AppConstants.println("리스트로 보여줄 데이터를 불러옴. ");
+
+        // 작성 일자를 기준으로 테이블의 필드들을 조회하는 sql 변수 할당
+        String sql = "select _id, WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE, CREATE_DATE, MODIFY_DATE from " + DiaryDatabase.TABLE_DIARY + " order by CREATE_DATE desc";
 
         int recordCount = -1;
 
         DiaryDatabase database = DiaryDatabase.getInstance(context);
-        if(database != null) {
-            Cursor outCursor = database.ra
+        // 데이터 베이스가 있을 경우 Cursor를 사용해 데이터 조회하기
+        if (database != null) {
+            Cursor outCursor = database.rawQuery(sql);
+
+            recordCount = outCursor.getCount();
+            AppConstants.println("레코드 개수 : " + recordCount + "\n");
+
+            ArrayList<Diary> items = new ArrayList<Diary>();
+
+            // 레코드 개수만큼 조회하기
+            for (int i = 0; i < recordCount; i++) {
+                outCursor.moveToNext();
+
+                int _id = outCursor.getInt(0);
+                String weather = outCursor.getString(1);
+                String address = outCursor.getString(2);
+                String locationX = outCursor.getString(3);
+                String locationY = outCursor.getString(4);
+                String contents = outCursor.getString(5);
+                String mood = outCursor.getString(6);
+                String picture = outCursor.getString(7);
+                String dateStr = outCursor.getString(8);
+                String createDateStr = null;
+
+                if (dateStr != null && dateStr.length() > 10) {
+                    try {
+                        Date inDate = AppConstants.dateFormat4.parse(dateStr);
+                        createDateStr = AppConstants.dateFormat3.format(inDate);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    createDateStr = "";
+                }
+                AppConstants.println("#" + i + " -> " + _id + ", " + weather + ", " + address + ", " + locationX + ", " + locationY + ", " + contents + ", " +
+                        mood + ", " + picture + ", " + createDateStr);
+                items.add(new Diary(_id, weather, address, locationX, locationY, contents, mood, picture, createDateStr));
+            }
+            outCursor.close();
+
+            // 어댑터로 리스트에 설정
+            adapter.setItems(items);
+            adapter.notifyDataSetChanged();
         }
+        return recordCount;
     }
 }

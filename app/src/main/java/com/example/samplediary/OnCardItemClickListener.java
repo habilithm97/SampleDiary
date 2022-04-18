@@ -4,5 +4,5 @@ import android.view.View;
 
 
 public interface OnCardItemClickListener {
-    public void onItemClick(CardAdapter.ViewHolder holder, View view, int position);
+    public void onItemClick(DiaryAdapter.ViewHolder holder, View view, int position);
 }

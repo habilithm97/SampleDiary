@@ -10,13 +10,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.samplediary.R;
 
 import java.util.ArrayList;
 
-public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> implements OnCardItemClickListener {
+public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> implements OnCardItemClickListener {
 
-    ArrayList<Card> items = new ArrayList<Card>();
+    ArrayList<Diary> items = new ArrayList<Diary>();
 
     int layoutType = 0;
 
@@ -32,7 +31,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
 
     @Override // 생성된 뷰홀더에 데이터를 바인딩해줌, 뷰홀더가 재사용될 때 뷰 객체는 기존 것 그대로 사용하고 데이터만 바꿔줌
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Card item = items.get(position);
+        Diary item = items.get(position);
 
         holder.setItem(item);
         holder.setLayoutType(layoutType);
@@ -43,15 +42,15 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
         return items.size();
     }
 
-    public void addItem(Card item) {
+    public void addItem(Diary item) {
         items.add(item);
     }
 
-    public void setItems(ArrayList<Card> items) {
+    public void setItems(ArrayList<Diary> items) {
         this.items = items;
     }
 
-    public Card getItem(int position) {
+    public Diary getItem(int position) {
         return items.get(position);
     }
 
@@ -116,7 +115,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> im
             setLayoutType(layoutType);
         }
 
-        public void setItem(Card item) {
+        public void setItem(Diary item) {
             // 기분 설정
             String mood = item.getMood();
             int moodIndex = Integer.parseInt(mood);
