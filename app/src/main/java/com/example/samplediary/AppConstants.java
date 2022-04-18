@@ -12,7 +12,7 @@ public class AppConstants {
     public static final int REQ_LOCATION_BY_ADDRESS = 101;
     public static final int REQ_WEATHER_BY_GRID = 102; // 날씨 요청 코드
 
-    public static final int REQ_PHOTO_CAPTURE = 103;
+    public static final int REQ_PHOTO_CAPTURE = 103; //
     public static final int REQ_PHOTO_SELECTION = 104;
 
     public static final int CONTENT_PHOTO = 105;
@@ -22,7 +22,7 @@ public class AppConstants {
 
     public static final String KEY_URI_PHOTO = "URI_PHOTO";
 
-    public static String DATABASE_NAME = "note.db";
+    public static String DATABASE_NAME = "diary.db";
 
     public static final int MODE_INSERT = 1;
     public static final int MODE_MODIFY = 2;
