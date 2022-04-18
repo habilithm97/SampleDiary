@@ -1,6 +1,7 @@
 package com.example.samplediary;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import lib.kingja.switchbutton.SwitchMultiButton;
 
 public class ListFragment extends Fragment {
+    private static final String TAG = "ListFragment";
 
     RecyclerView recyclerView;
     CardAdapter adapter;
@@ -33,7 +35,7 @@ public class ListFragment extends Fragment {
         this.context = context;
 
         // 액티비티에 필요한 인터페이스가 구현이 됐는지 확인
-        if(context instanceof onTabItemSelectedListener) {
+        if (context instanceof onTabItemSelectedListener) {
             listener = (onTabItemSelectedListener) context;
         } else { // throw new 예외~ 구문은 강제로 예외를 발생 시킬 수 있음
             throw new RuntimeException(context.toString() + "onTabSelected() 메서드를 구현해주세요. ");
@@ -44,7 +46,7 @@ public class ListFragment extends Fragment {
     public void onDetach() { // 프래그먼트가 액티비티에서 내려올 때  호출됨
         super.onDetach();
 
-        if(context != null) {
+        if (context != null) {
             context = null;
             listener = null;
         }
@@ -52,9 +54,11 @@ public class ListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_list, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_list, container, false);
         // rootView는 최상위 레이아웃, xml 인플레이션을 통해 참조한 객체임 -> 인플레이션 과정이 끝나고 나면 프래그먼트가 하나의 뷰처럼 동작할 수 있게됨
         initUi(rootView);
+
+        loadDiaryListData();
 
         return rootView;
     }
@@ -66,7 +70,7 @@ public class ListFragment extends Fragment {
         writeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(listener != null) {
+                if (listener != null) {
                     listener.onTabSelected(1); // 작성하기 버튼을 누르면 두 번째 프래그먼트(작성화면)를 띄워줌
                 }
             }
@@ -107,5 +111,18 @@ public class ListFragment extends Fragment {
                 Toast.makeText(getContext(), "아이템 선택 : " + item.getContents(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public int loadDiaryListData()_ {
+        AppConstants.println("저장된 데이터를 로드함. ");
+        String sql = "select -id, WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE, CREATE_DATE, MODIFY_DATE from "
+                + DiaryDatabase.TABLE_DIARY + " order by CREATE_DATE desc";
+
+        int recordCount = -1;
+
+        DiaryDatabase database = DiaryDatabase.getInstance(context);
+        if(database != null) {
+            Cursor outCursor = database.ra
         }
     }
+}

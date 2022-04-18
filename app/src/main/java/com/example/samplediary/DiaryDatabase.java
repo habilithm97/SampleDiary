@@ -1,6 +1,7 @@
 package com.example.samplediary;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Paint;
@@ -31,10 +32,59 @@ public class DiaryDatabase { // 데이터 베이스 클래스
         return database;
     }
 
+    public boolean open() {
+        println("[ " + AppConstants.DATABASE_NAME + " ] 데이터 베이스가 오픈됨. ");
+
+        // 헬퍼 객체 생성하고 db 객체 참조함
+        dbHelper = new DBHelper(context);
+        db = dbHelper.getWritableDatabase();
+
+        return true;
+    }
+
+    public void close() {
+        println("[ " + AppConstants.DATABASE_NAME + " ] 데이터 베이스를 닫음. ");
+
+        db.close();
+        database = null;
+    }
+
+    /*
+    -SELECT 명령어를 사용하여 query를 실행함
+    -쿼리의 결과는 Cursor 객체를 리턴함
+    -Cursor 객체는 쿼리에 의하여 생성된 행들을 가리킴
+    -Cursor는 데이터 베이스에서 결과를 순회하고 데이터를 읽는데 사용되는 표준적인 메커니즘임
+     */
+    public Cursor rawQuery(String SQL) {
+        println("\nexecuteQuery가 호출됨. ");
+
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(SQL, null);
+            println("커서 카운트 : " + cursor.getCount());
+        } catch (Exception e) {
+            Log.e(TAG, "executeQuery 호출 중 오류가 발생함. ", e);
+        }
+        return cursor;
+    }
+
+    // SELECT 명령을 제외한 모든 SQL 문장을 실행함
+    public boolean execSQL(String SQL) {
+        println("\nexecute 호출됨. ");
+
+        try {
+            Log.d(TAG, "SQL : " + SQL);
+            db.execSQL(SQL);
+        } catch (Exception e) {
+            Log.e(TAG, "execute 호출 중 오류가 발생함.", e);
+        }
+        return true;
+    }
+
     private class DBHelper extends SQLiteOpenHelper {
 
-        public DBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
-            super(context, name, factory, version);
+        public DBHelper(@Nullable Context context) {
+            super(context, AppConstants.DATABASE_NAME, null, DB_VERSION);
         }
 
         @Override
