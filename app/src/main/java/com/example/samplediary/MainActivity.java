@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
 
     int locationCount = 0; // 위치 정보를 확인한 횟수(위치를 한 번 확인한 후에는 위치 요청을 취소할 수 있도록)
 
+    public static DiaryDatabase diaryDatabase = null; // 데이터 베이스 인스턴스
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +103,34 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                 });
         // 앱이 처음 시작될 때 AutoPermissions 승인 요청을 처리하기 위해
         AutoPermissions.Companion.loadAllPermissions(this, 101);
+
+        openDatabase(); // 데이터 베이스 열기
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(diaryDatabase != null) {
+            diaryDatabase.close();
+            diaryDatabase = null;
+        }
+    }
+
+    // 데이터 베이스 열기(데이터 베이스가 없으면 생성)
+    public void openDatabase() {
+        if(diaryDatabase != null) {
+            diaryDatabase.close();
+            diaryDatabase = null;
+        }
+
+        diaryDatabase = DiaryDatabase.getInstance(this);
+        boolean isOpen = diaryDatabase.open();
+        if(isOpen) {
+            Log.d(TAG, "데이터 베이스가 오픈됨. ");
+        } else {
+            Log.d(TAG, "데이터 베이스가 오픈되지 않음. ");
+        }
     }
 
     public void onRequest(String command) { // 두 번째 프래그먼트에서 호출됨
