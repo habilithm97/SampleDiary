@@ -3,25 +3,25 @@ package com.example.samplediary;
 public class Diary {
 
     int _id;
+    String weather;
     String address;
-    String weather; // 데이터베이스에서 조회한 아이디 값을 넣어둠
     String location_x;
     String location_y;
     String contents;
     String mood;
     String picture;
-    String createDate; // 작성 일자
+    String createDateStr; // 작성 일자
 
-    public Diary(int _id, String address, String weather, String location_x, String location_y, String contents, String mood, String picture, String createDate) {
+    public Diary(int _id, String weather, String address, String location_x, String location_y, String contents, String mood, String picture, String createDateStr) {
         this._id = _id;
-        this.address = address;
         this.weather = weather;
+        this.address = address;
         this.location_x = location_x;
         this.location_y = location_y;
         this.contents = contents;
         this.mood = mood;
         this.picture = picture;
-        this.createDate = createDate;
+        this.createDateStr = createDateStr;
     }
 
     public int get_id() {
@@ -88,11 +88,11 @@ public class Diary {
         this.picture = picture;
     }
 
-    public String getCreateDate() {
-        return createDate;
+    public String getCreateDateStr() {
+        return createDateStr;
     }
 
-    public void setCreateDate(String createDate) {
-        this.createDate = createDate;
+    public void setCreateDateStr(String createDate) {
+        this.createDateStr = createDateStr;
     }
 }

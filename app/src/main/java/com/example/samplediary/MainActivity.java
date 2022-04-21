@@ -28,6 +28,7 @@ import com.stanfy.gsonxml.XmlParserCreator;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.File;
 import java.security.Permission;
 import java.util.Date;
 import java.util.HashMap;
@@ -101,6 +102,9 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                         return false;
                     }
                 });
+
+        setPicturePath(); // 사진 경로 접근 및 폴더 없으면 폴더 생성
+
         // 앱이 처음 시작될 때 AutoPermissions 승인 요청을 처리하기 위해
         AutoPermissions.Companion.loadAllPermissions(this, 101);
 
@@ -130,6 +134,16 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
             Log.d(TAG, "데이터 베이스가 오픈됨. ");
         } else {
             Log.d(TAG, "데이터 베이스가 오픈되지 않음. ");
+        }
+    }
+
+    public void setPicturePath() {
+        String folderPath = getFilesDir().getAbsolutePath(); // 내부 저장소 file 경로 접근 방법
+        AppConstants.FOLDER_PHOTO = folderPath + File.separator + "photo";
+
+        File photoFolder = new File(AppConstants.FOLDER_PHOTO);
+        if(!photoFolder.exists()) { // 사진 폴더가 존재하지 않으면 생성
+            photoFolder.mkdir();
         }
     }
 

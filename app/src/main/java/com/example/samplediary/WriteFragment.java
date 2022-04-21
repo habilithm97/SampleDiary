@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -32,9 +31,11 @@ import com.example.samplediary.R;
 import com.github.channguyen.rsv.RangeSliderView;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class WriteFragment extends Fragment {
-
     private static final String TAG = "WriteFragment";
 
     Context context;
@@ -43,6 +44,7 @@ public class WriteFragment extends Fragment {
 
     TextView dateTv, locationTv, weatherTv;
     ImageView weatherIcon, pictureInput;
+    EditText contentEdt;
 
     boolean isPhotoCaptured;
     boolean isPhotoFileSaved;
@@ -51,6 +53,18 @@ public class WriteFragment extends Fragment {
     int selectedPhotoMenu;
 
     File file;
+
+    int mMode = AppConstants.MODE_INSERT; // 일기를 새로 만드는지(default), 아니면 기존 일기를 수정하는지를 구분하는 구분자 값임
+    int _id = -1;
+    int weatherIndex = 0;
+    RangeSliderView moodSlider;
+    int moodIndex = 2;
+
+    Diary item; // 기존 일기가 있으면 작성화면으로 전환되면서 item 변수 값이 설정되고 화면에는 item 변수가 들어 있는 데이터를 보여줌
+
+    Bitmap resultPhotoBitmap;
+
+    SimpleDateFormat todayDateFormat;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -84,14 +98,12 @@ public class WriteFragment extends Fragment {
 
         initUi(rootView);
 
-        if(requestListener != null)
-        {
+        if(requestListener != null) {
             requestListener.onRequest("getCurrentLocation"); // 현재 위치 요청하기!!!
-            println("현재 위치 요청함");
-            //Toast.makeText(getContext(), "현재 위치 요청함", Toast.LENGTH_SHORT).show();
         }
         return rootView;
     }
+
     private void initUi(ViewGroup rootView) { // 인플레이션 후에 xml 레이아웃 안에 들어 있는 위젯이나 레이아웃을 찾아
         // 변수에 할당하는 코드들을 넣기 위해 만들어 둔 것임
 
@@ -99,7 +111,7 @@ public class WriteFragment extends Fragment {
         dateTv = rootView.findViewById(R.id.dateTv);
         locationTv = rootView.findViewById(R.id.locationTv);
         weatherTv = rootView.findViewById(R.id.weatherTv);
-        EditText contentEdt = rootView.findViewById(R.id.contentsEdt);
+        contentEdt = rootView.findViewById(R.id.contentsEdt);
 
         pictureInput = rootView.findViewById(R.id.pictureInput);
         pictureInput.setOnClickListener(new View.OnClickListener() {
@@ -117,6 +129,11 @@ public class WriteFragment extends Fragment {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(mMode == AppConstants.MODE_INSERT) { // 저장
+                    saveDiary();
+                } else if(mMode == AppConstants.MODE_MODIFY) { // 수정
+                    modifyDiary();
+                }
                 if(listener != null) {
                     listener.onTabSelected(0); // 리스트 프래그먼트로 화면 전환
                 }
@@ -127,6 +144,8 @@ public class WriteFragment extends Fragment {
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deleteDiary();
+
                 if(listener != null) {
                     listener.onTabSelected(0); // 리스트 프래그먼트로 화면 전환
                 }
@@ -143,13 +162,114 @@ public class WriteFragment extends Fragment {
             }
         });
 
-        RangeSliderView sliderView = rootView.findViewById(R.id.sliderView);
-        sliderView.setOnSlideListener(new RangeSliderView.OnSlideListener() {
+        moodSlider = rootView.findViewById(R.id.sliderView);
+        final RangeSliderView.OnSlideListener listener = new RangeSliderView.OnSlideListener() {
             @Override
-            public void onSlide(int index) { // 값이 바뀔 때마다 호출
+            public void onSlide(int index) { // 값이 바뀔 때마다 호출됨
+                AppConstants.println("기분이 변경됨 : " + index);
+                moodIndex = index;
             }
-        });
-        sliderView.setInitialIndex(2); // 다섯 개의 기분 중 가운데 기분이 디폴트 값임
+        };
+        moodSlider.setOnSlideListener(listener);
+        moodSlider.setInitialIndex(2); // 다섯 개의 기분 중 가운데 기분이 디폴트 값임
+    }
+
+    private void saveDiary() {
+        String address = locationTv.getText().toString();
+        String contents = contentEdt.getText().toString();
+        String picturePath = savePicture();
+
+        String sql = "insert into " + DiaryDatabase.TABLE_DIARY + "(WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE) values(" +
+                "'"+ weatherIndex + "', " +
+                "'"+ address + "', " +
+                "'"+ "" + "', " +
+                "'"+ "" + "', " +
+                "'"+ contents + "', " +
+                "'"+ moodIndex + "', " +
+                "'"+ picturePath + "')";
+
+        Log.d(TAG, "sql : " + sql);
+        DiaryDatabase database = DiaryDatabase.getInstance(context);
+        database.execSQL(sql); // 데이터 베이스의 쿼리를 실행시켜 데이터를 삽입함
+    }
+
+    private void modifyDiary() {
+        if(item != null) {
+            String address = locationTv.getText().toString();
+            String contents = contentEdt.getText().toString();
+            String picturePath = savePicture();
+
+            String sql = "update " + DiaryDatabase.TABLE_DIARY +
+                    " set " +
+                    "   WEATHER = '" + weatherIndex + "'" +
+                    "   ,ADDRESS = '" + address + "'" +
+                    "   ,LOCATION_X = '" + "" + "'" +
+                    "   ,LOCATION_Y = '" + "" + "'" +
+                    "   ,CONTENTS = '" + contents + "'" +
+                    "   ,MOOD = '" + moodIndex + "'" +
+                    "   ,PICTURE = '" + picturePath + "'" +
+                    " where " +
+                    "   _id = " + item._id;
+
+            Log.d(TAG, "sql : " + sql);
+            DiaryDatabase database = DiaryDatabase.getInstance(context);
+            database.execSQL(sql);
+        }
+    }
+
+    private void deleteDiary() {
+        AppConstants.println("삭제 메서드가 호출됨. ");
+
+        if(item != null) {
+            String sql = "delete from " + DiaryDatabase.TABLE_DIARY + " where " + "  _id = " + item._id;
+
+            Log.d(TAG, "sql : " + sql);
+            DiaryDatabase database = DiaryDatabase.getInstance(context);
+            database.execSQL(sql);
+        }
+    }
+
+    private String savePicture() { // 사진을 데이터 베이스에 저장함
+        if (resultPhotoBitmap == null) {
+            AppConstants.println("저장할 사진이 없음. ");
+            return "";
+        }
+        // 이미지는 폴더를 만들어 저장하고, 이미지 경로만 데이터 베이스에 저장함
+        File photoFolder = new File(AppConstants.FOLDER_PHOTO); // 이미지를 저장할 폴더
+        if(!photoFolder.isDirectory()) { // 사진 폴더가 없으면 생성
+            Log.d(TAG, "사진 폴더 생성 : " + photoFolder);
+            photoFolder.mkdirs();
+        }
+
+        String photoFilename = createFilename(); // 현재 날짜를 이미지 파일 이름으로함
+        String picturePath = photoFolder + File.separator + photoFilename; // 이미지 경로
+
+        try {
+            FileOutputStream outstream = new FileOutputStream(picturePath); // 이미지 경로로 파일 생성
+            resultPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, outstream); // 이미지를 압축(100이면 그대로)
+            outstream.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return picturePath;
+    }
+
+    private File createFile() { // 파일 생성
+        // String filename = "capture.jpg"; // sd 카드 파일 이름
+        String filename = createFilename();
+        //File storageDir = Environment.getExternalStorageDirectory();
+        //File outFile = new File(storageDir, filename);
+        File outFile = new File(context.getFilesDir(), filename);
+        Log.d("메인 ", "파일 경로 : " + outFile.getAbsolutePath());
+
+        return outFile;
+    }
+
+    private String createFilename() { // 파일 이름은 현재 날짜를 기준으로함
+        Date curDate = new Date();
+        String curDateStr = String.valueOf(curDate.getTime());
+
+        return curDateStr;
     }
 
     public void setDateString(String dateString) {
@@ -157,7 +277,6 @@ public class WriteFragment extends Fragment {
     }
 
     public void setWeather(String data) {
-
         if (data != null) {
             if (data.equals("맑음")) {
                 weatherIcon.setImageResource(R.drawable.weather_sun);
@@ -186,8 +305,60 @@ public class WriteFragment extends Fragment {
         }
     }
 
+    public void setWeatherIndex(int index) {
+        if (index == 0) {
+            weatherIcon.setImageResource(R.drawable.weather_sun);
+            weatherIndex = 0;
+        } else if (index == 1) {
+            weatherIcon.setImageResource(R.drawable.weather_mini_cloud);
+            weatherIndex = 1;
+        } else if (index == 2) {
+            weatherIcon.setImageResource(R.drawable.weather_sun_cloud);
+            weatherIndex = 2;
+        } else if (index == 3) {
+            weatherIcon.setImageResource(R.drawable.weather_cloud);
+            weatherIndex = 3;
+        } else if (index == 4) {
+            weatherIcon.setImageResource(R.drawable.weather_rain);
+            weatherIndex = 4;
+        } else if (index == 5) {
+            weatherIcon.setImageResource(R.drawable.weather_snow_rain);
+            weatherIndex = 5;
+        } else if (index == 6) {
+            weatherIcon.setImageResource(R.drawable.weather_snow);
+            weatherIndex = 6;
+        } else {
+            Log.d(TAG, "알 수 없는 인덱스 : " + index);
+        }
+    }
+
     public void setAddress(String data) {
         locationTv.setText(data);
+    }
+
+    public void setContents(String data) {
+        contentEdt.setText(data);
+    }
+
+    public void setPicture(String picturePath, int sampleSize) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = sampleSize;
+        resultPhotoBitmap = BitmapFactory.decodeFile(picturePath, options);
+
+        pictureInput.setImageBitmap(resultPhotoBitmap);
+    }
+
+    public void setMood(String mood) {
+        try {
+            moodIndex = Integer.parseInt(mood);
+            moodSlider.setInitialIndex(moodIndex);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setItem(Diary item) {
+        this.item = item;
     }
 
     public void showDialog(int id) {
@@ -266,9 +437,19 @@ public class WriteFragment extends Fragment {
     }
 
     public void showPhotoCaptureActivity() { // 사진 찍기
+        /*
         // 파일이 없으면 생성(카메라 앱에서 촬영한 사진을 저장할 file)
         if(file == null) {
             file = createFile();
+        } */
+        try {
+            file = createFile();
+            if(file.exists()) {
+                file.delete();
+            }
+            file.createNewFile();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         /*
         *FileProvider
@@ -286,14 +467,6 @@ public class WriteFragment extends Fragment {
         }
     }
 
-    private File createFile() { // 파일 생성
-        String filename = "capture.jpg"; // sd 카드 파일 이름
-        File storageDir = Environment.getExternalStorageDirectory();
-        File outFile = new File(storageDir, filename);
-
-        return outFile;
-    }
-
     public void showPhotoSelectionActivity() { // 앨범에서 선택하기
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, AppConstants.REQ_PHOTO_SELECTION);
@@ -309,7 +482,7 @@ public class WriteFragment extends Fragment {
                     Log.d(TAG, "사진 찍기 메뉴의 onActivityResult() ");
                     Log.d(TAG, "resultCode : " + resultCode);
 
-                    Bitmap resultPhotoBitmap = decodeSampleBitmapFromResource(file, pictureInput.getWidth(), pictureInput.getHeight());
+                    resultPhotoBitmap = decodeSampleBitmapFromResource(file, pictureInput.getWidth(), pictureInput.getHeight());
                     pictureInput.setImageBitmap(resultPhotoBitmap);
 
                     // 사진이 넣었기 때문에 사진 유무 상태를 변경
@@ -351,7 +524,6 @@ public class WriteFragment extends Fragment {
 
                     break;
             }
-
         }
     }
 

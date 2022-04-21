@@ -97,16 +97,18 @@ public class ListFragment extends Fragment {
 
         adapter = new DiaryAdapter();
 
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울시 강남구 홍길동", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
+        /*
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
+        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
+         */
 
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new OnCardItemClickListener() {

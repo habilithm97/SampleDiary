@@ -145,69 +145,73 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
             locationTv.setText(item.getAddress());
             locationTv2.setText(item.getAddress());
 
-            dateTv.setText(item.getCreateDate());
-            dateTv2.setText(item.getCreateDate());
+            dateTv.setText(item.getCreateDateStr());
+            dateTv2.setText(item.getCreateDateStr());
         }
 
         public void setMoodImg(int moodIndex) {
             switch (moodIndex) {
                 case 0:
-                    moodImg.setImageResource(R.drawable.smile);
-                    moodImg2.setImageResource(R.drawable.smile);
-
+                    moodImg.setImageResource(R.drawable.smile1_48);
+                    moodImg2.setImageResource(R.drawable.smile1_48);
+                    break;
                 case 1:
-                    moodImg.setImageResource(R.drawable.smile);
-                    moodImg2.setImageResource(R.drawable.smile);
-
+                    moodImg.setImageResource(R.drawable.smile2_48);
+                    moodImg2.setImageResource(R.drawable.smile2_48);
+                    break;
                 case 2:
-                    moodImg.setImageResource(R.drawable.smile);
-                    moodImg2.setImageResource(R.drawable.smile);
-
+                    moodImg.setImageResource(R.drawable.smile3_48);
+                    moodImg2.setImageResource(R.drawable.smile3_48);
+                    break;
                 case 3:
-                    moodImg.setImageResource(R.drawable.smile);
-                    moodImg2.setImageResource(R.drawable.smile);
-
+                    moodImg.setImageResource(R.drawable.smile4_48);
+                    moodImg2.setImageResource(R.drawable.smile4_48);
+                    break;
                 case 4:
-                    moodImg.setImageResource(R.drawable.smile);
-                    moodImg2.setImageResource(R.drawable.smile);
+                    moodImg.setImageResource(R.drawable.smile5_48);
+                    moodImg2.setImageResource(R.drawable.smile5_48);
+                    break;
                 default:
-                    moodImg.setImageResource(R.drawable.smile);
-                    moodImg2.setImageResource(R.drawable.smile);
+                    moodImg.setImageResource(R.drawable.smile3_48);
+                    moodImg2.setImageResource(R.drawable.smile3_48);
+                    break;
             }
         }
 
         public void setWeatherImg(int weatherIndex) {
             switch (weatherIndex) {
                 case 0:
-                    weatherImg.setImageResource(R.drawable.weather);
-                    weatherImg2.setImageResource(R.drawable.weather);
-
+                    weatherImg.setImageResource(R.drawable.weather_sun);
+                    weatherImg2.setImageResource(R.drawable.weather_sun);
+                    break;
                 case 1:
-                    weatherImg.setImageResource(R.drawable.weather);
-                    weatherImg2.setImageResource(R.drawable.weather);
-
+                    weatherImg.setImageResource(R.drawable.weather_mini_cloud);
+                    weatherImg2.setImageResource(R.drawable.weather_mini_cloud);
+                    break;
                 case 2:
-                    weatherImg.setImageResource(R.drawable.weather);
-                    weatherImg2.setImageResource(R.drawable.weather);
-
+                    weatherImg.setImageResource(R.drawable.weather_sun_cloud);
+                    weatherImg2.setImageResource(R.drawable.weather_sun_cloud);
+                    break;
                 case 3:
-                    weatherImg.setImageResource(R.drawable.weather);
-                    weatherImg2.setImageResource(R.drawable.weather);
-
+                    weatherImg.setImageResource(R.drawable.weather_cloud);
+                    weatherImg2.setImageResource(R.drawable.weather_cloud);
+                    break;
                 case 4:
-                    weatherImg.setImageResource(R.drawable.weather);
-                    weatherImg2.setImageResource(R.drawable.weather);
-
+                    weatherImg.setImageResource(R.drawable.weather_rain);
+                    weatherImg2.setImageResource(R.drawable.weather_rain);
+                    break;
                 case 5:
-                    weatherImg.setImageResource(R.drawable.weather);
-                    weatherImg2.setImageResource(R.drawable.weather);
-
-                case 9:
-                    weatherImg.setImageResource(R.drawable.weather);
-                    weatherImg2.setImageResource(R.drawable.weather);
+                    weatherImg.setImageResource(R.drawable.weather_snow_rain);
+                    weatherImg2.setImageResource(R.drawable.weather_snow_rain);
+                    break;
+                case 6:
+                    weatherImg.setImageResource(R.drawable.weather_snow);
+                    weatherImg2.setImageResource(R.drawable.weather_snow);
+                    break;
                 default:
-                    weatherImg.setImageResource(R.drawable.weather);
-                    weatherImg2.setImageResource(R.drawable.weather);
+                    weatherImg.setImageResource(R.drawable.weather_sun);
+                    weatherImg2.setImageResource(R.drawable.weather_sun);
+                    break;
             }
         }
 
