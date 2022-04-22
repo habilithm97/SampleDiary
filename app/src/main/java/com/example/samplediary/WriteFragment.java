@@ -129,18 +129,21 @@ public class WriteFragment extends Fragment {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mMode == AppConstants.MODE_INSERT) { // 저장
-                    saveDiary();
-                    contentEdt.setText(null);
-                    // 사진이 삭제했기 때문에 사진 유무 상태를 변경
-                    isPhotoCaptured = false;
-                    isPhotoFileSaved = false;
-
-                } else if(mMode == AppConstants.MODE_MODIFY) { // 수정
-                    modifyDiary();
-                }
-                if(listener != null) {
-                    listener.onTabSelected(0); // 리스트 프래그먼트로 화면 전환
+                if(contentEdt.getText().toString().equals("")) {
+                    Toast.makeText(getContext(), "내용을 입력해주세요. ", Toast.LENGTH_SHORT).show();
+                } else {
+                    if(mMode == AppConstants.MODE_INSERT) { // 저장
+                        saveDiary();
+                        contentEdt.setText(null);
+                        // 사진이 삭제했기 때문에 사진 유무 상태를 변경
+                        isPhotoCaptured = false;
+                        isPhotoFileSaved = false;
+                    } else if(mMode == AppConstants.MODE_MODIFY) { // 수정
+                        modifyDiary();
+                    }
+                    if(listener != null) {
+                        listener.onTabSelected(0); // 리스트 프래그먼트로 화면 전환
+                    }
                 }
             }
         });
