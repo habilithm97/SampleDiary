@@ -121,6 +121,11 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
             int moodIndex = Integer.parseInt(mood);
             setMoodImg(moodIndex);
 
+            // 날씨 설정
+            String weather = item.getWeather();
+            int weatherIndex = Integer.parseInt(weather);
+            setWeatherImg(weatherIndex);
+
             // 사진 설정
             String picturePath = item.getPicture();
             if (picturePath != null && !picturePath.equals("")) { // 사진이 있으면
@@ -133,11 +138,6 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
                 pictureImg2.setVisibility(View.GONE);
                 pictureImg2.setImageResource(R.drawable.noimagefound);
             }
-
-            // 날씨 설정
-            String weather = item.getWeather();
-            int weatherIndex = Integer.parseInt(weather);
-            setWeatherImg(weatherIndex);
 
             contentsTv.setText(item.getContents());
             contentsTv2.setText(item.getContents());
