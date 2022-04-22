@@ -131,6 +131,11 @@ public class WriteFragment extends Fragment {
             public void onClick(View view) {
                 if(mMode == AppConstants.MODE_INSERT) { // 저장
                     saveDiary();
+                    contentEdt.setText(null);
+                    // 사진이 삭제했기 때문에 사진 유무 상태를 변경
+                    isPhotoCaptured = false;
+                    isPhotoFileSaved = false;
+
                 } else if(mMode == AppConstants.MODE_MODIFY) { // 수정
                     modifyDiary();
                 }
