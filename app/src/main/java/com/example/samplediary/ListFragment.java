@@ -91,6 +91,7 @@ public class ListFragment extends Fragment {
         });
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView.smoothScrollToPosition(0);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);

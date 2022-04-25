@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> implements OnCardItemClickListener {
 
-    ArrayList<Diary> items = new ArrayList<Diary>();
+    static ArrayList<Diary> items = new ArrayList<Diary>();
 
     int layoutType = 0;
 

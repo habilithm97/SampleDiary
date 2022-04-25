@@ -54,17 +54,14 @@ public class WriteFragment extends Fragment {
 
     File file;
 
-    int mMode = AppConstants.MODE_INSERT; // 일기를 새로 만드는지(default), 아니면 기존 일기를 수정하는지를 구분하는 구분자 값임
-    int _id = -1;
-    int weatherIndex = 0;
+    int mMode = AppConstants.MODE_INSERT; // 일기를 새로 만드는지(default), 아니면 기존 일기를 수정하는지를 구분하는 구분자 값
+    int weatherIndex = 0; // 날씨 인덱스(디퐅트 맑음)
     RangeSliderView moodSlider;
-    int moodIndex = 2;
+    int moodIndex = 2; // 기분 인덱스(디폴트 가운데 기분)
 
     Diary item; // 기존 일기가 있으면 작성화면으로 전환되면서 item 변수 값이 설정되고 화면에는 item 변수가 들어 있는 데이터를 보여줌
 
     Bitmap resultPhotoBitmap;
-
-    SimpleDateFormat todayDateFormat;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -134,10 +131,12 @@ public class WriteFragment extends Fragment {
                 } else {
                     if(mMode == AppConstants.MODE_INSERT) { // 저장
                         saveDiary();
+                        // 일기가 저장되면 일기 작성화면 초기화(내용, 이미지, 기분 상태)
                         contentEdt.setText(null);
                         // 사진이 삭제했기 때문에 사진 유무 상태를 변경
                         isPhotoCaptured = false;
                         isPhotoFileSaved = false;
+                        moodSlider.setInitialIndex(2); // 다섯 개의 기분 중 가운데 기분이 디폴트 값임
                     } else if(mMode == AppConstants.MODE_MODIFY) { // 수정
                         modifyDiary();
                     }
