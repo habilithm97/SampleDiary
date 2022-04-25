@@ -187,12 +187,12 @@ public class WriteFragment extends Fragment {
         String picturePath = savePicture();
 
         String sql = "insert into " + DiaryDatabase.TABLE_DIARY + "(WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE) values(" +
-                "'"+ weatherIndex + "', " +
+                "'"+ weatherIndex + "', " + // 왜 날짜는 그대로 0이 들어가고,
                 "'"+ address + "', " +
                 "'"+ "" + "', " +
                 "'"+ "" + "', " +
                 "'"+ contents + "', " +
-                "'"+ moodIndex + "', " +
+                "'"+ moodIndex + "', " + // 왜 기분은 2에서 변해서 들어갈까
                 "'"+ picturePath + "')";
 
         Log.d(TAG, "sql : " + sql);
@@ -288,24 +288,31 @@ public class WriteFragment extends Fragment {
             if (data.equals("맑음")) {
                 weatherIcon.setImageResource(R.drawable.weather_sun);
                 weatherTv.setText("맑음");
+                weatherIndex = 0;
             } else if (data.equals("구름 조금")) {
                 weatherIcon.setImageResource(R.drawable.weather_mini_cloud);
                 weatherTv.setText("구름 조금");
+                weatherIndex = 1;
             } else if (data.equals("구름 많음")) {
                 weatherIcon.setImageResource(R.drawable.weather_sun_cloud);
                 weatherTv.setText("구름 많음");
+                weatherIndex = 2;
             } else if (data.equals("흐림")) {
                 weatherIcon.setImageResource(R.drawable.weather_cloud);
                 weatherTv.setText("흐림");
+                weatherIndex = 3;
             } else if (data.equals("비")) {
                 weatherIcon.setImageResource(R.drawable.weather_rain);
                 weatherTv.setText("비");
+                weatherIndex = 4;
             } else if (data.equals("눈/비")) {
                 weatherIcon.setImageResource(R.drawable.weather_snow_rain);
                 weatherTv.setText("눈/비");
+                weatherIndex = 5;
             } else if (data.equals("눈")) {
                 weatherIcon.setImageResource(R.drawable.weather_snow);
                 weatherTv.setText("눈");
+                weatherIndex = 6;
             } else {
                 Log.d(TAG, "알 수 없는 날씨 : " + data);
             }

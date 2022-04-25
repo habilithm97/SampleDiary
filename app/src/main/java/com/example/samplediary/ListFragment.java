@@ -144,7 +144,7 @@ public class ListFragment extends Fragment {
                 outCursor.moveToNext();
 
                 int _id = outCursor.getInt(0);
-                String weather = outCursor.getString(1);
+                String weather = outCursor.getString(1); // 여기서 인덱스 0값만 가져옴;
                 String address = outCursor.getString(2);
                 String locationX = outCursor.getString(3);
                 String locationY = outCursor.getString(4);
