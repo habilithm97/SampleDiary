@@ -243,6 +243,14 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         }
     }
 
+    @Override
+    public void showWriteFragment(Diary item) {
+        writeFragment = new WriteFragment();
+        writeFragment.setItem(item);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, writeFragment).commit();
+    }
+
     public void getCurrentWeather() { // 현재 날씨 가져오기
         // GridUtill 객체의 getGrid() 메서드로 격자 번호를 확인
         Map<String, Double> gridMap = GridUtil.getGrid(currentLocation.getLatitude(), currentLocation.getLongitude());

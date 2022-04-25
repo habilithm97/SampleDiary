@@ -1,5 +1,7 @@
 package com.example.samplediary;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -21,10 +24,16 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
 
     OnCardItemClickListener listener;
 
+    public static int position;
+
+    Context context;
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         View itemView = (LayoutInflater.from(viewGroup.getContext())).inflate(R.layout.card_item, viewGroup, false);
+
+        context = viewGroup.getContext();
 
         return new ViewHolder(itemView, this, layoutType); // 뷰홀더 객체를 생성하면서 뷰 객체와 리스너, 레이아웃 타입을 전달하고 그 뷰홀더 객체 리턴함
     }
@@ -69,7 +78,7 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
         layoutType = position;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener{
 
         LinearLayout layout1, layout2;
 
@@ -113,6 +122,31 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
                 }
             });
             setLayoutType(layoutType);
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    position = getAdapterPosition(); // 클릭한 위치를 가져옴
+
+                    // 대화상자 생성
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("삭제하기");
+                    builder.setMessage("선택한 일기를 정말로 삭제하시겠습니까 ?");
+                    builder.setIcon(R.drawable.delete);
+                    builder.setPositiveButton("삭제하기", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //deleteItem(position);
+                                }
+                            });
+                    builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                    builder.show();
+                    return true;
+                }
+            });
         }
 
         public void setItem(Diary item) {
@@ -223,6 +257,11 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
                 layout1.setVisibility(View.GONE);
                 layout2.setVisibility(View.VISIBLE);
             }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            return true;
         }
     }
 }

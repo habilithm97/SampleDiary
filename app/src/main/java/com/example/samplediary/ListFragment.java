@@ -117,6 +117,10 @@ public class ListFragment extends Fragment {
             public void onItemClick(DiaryAdapter.ViewHolder holder, View view, int position) {
                 Diary item = adapter.getItem(position);
                 Toast.makeText(getContext(), "아이템 선택 : " + item.getContents(), Toast.LENGTH_SHORT).show();
+
+                if (listener != null) {
+                    listener.showWriteFragment(item);
+                }
             }
         });
     }

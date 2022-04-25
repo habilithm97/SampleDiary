@@ -54,7 +54,7 @@ public class WriteFragment extends Fragment {
 
     File file;
 
-    int mMode = AppConstants.MODE_INSERT; // 일기를 새로 만드는지(default), 아니면 기존 일기를 수정하는지를 구분하는 구분자 값
+    static int mMode = AppConstants.MODE_INSERT; // 일기를 새로 만드는지(default), 아니면 기존 일기를 수정하는지를 구분하는 구분자 값
     int weatherIndex = 0; // 날씨 인덱스(디퐅트 맑음)
     RangeSliderView moodSlider;
     int moodIndex = 2; // 기분 인덱스(디폴트 가운데 기분)
