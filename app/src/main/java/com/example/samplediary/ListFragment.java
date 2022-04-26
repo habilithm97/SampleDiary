@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +92,6 @@ public class ListFragment extends Fragment {
         });
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
-        recyclerView.smoothScrollToPosition(0);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -112,11 +112,12 @@ public class ListFragment extends Fragment {
          */
 
         recyclerView.setAdapter(adapter);
+
         adapter.setOnItemClickListener(new OnCardItemClickListener() {
             @Override
             public void onItemClick(DiaryAdapter.ViewHolder holder, View view, int position) {
                 Diary item = adapter.getItem(position);
-                Toast.makeText(getContext(), "아이템 선택 : " + item.getContents(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "아이템 선택됨 : " + item.get_id());
 
                 if (listener != null) {
                     listener.showWriteFragment(item);
@@ -148,7 +149,7 @@ public class ListFragment extends Fragment {
                 outCursor.moveToNext();
 
                 int _id = outCursor.getInt(0);
-                String weather = outCursor.getString(1); // 여기서 인덱스 0값만 가져옴;
+                String weather = outCursor.getString(1);
                 String address = outCursor.getString(2);
                 String locationX = outCursor.getString(3);
                 String locationY = outCursor.getString(4);

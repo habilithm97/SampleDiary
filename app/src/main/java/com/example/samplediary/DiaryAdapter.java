@@ -3,12 +3,14 @@ package com.example.samplediary;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> implements OnCardItemClickListener {
+    private static final String TAG = "DiaryAdapter";
 
     static ArrayList<Diary> items = new ArrayList<Diary>();
 
@@ -27,6 +30,8 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
     public static int position;
 
     Context context;
+
+    Diary item;
 
     @NonNull
     @Override
@@ -135,7 +140,8 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
                     builder.setIcon(R.drawable.delete);
                     builder.setPositiveButton("삭제하기", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    //deleteItem(position);
+                                    //deleteDiary();
+                                    Toast.makeText(context, "삭제되었습니다. ", Toast.LENGTH_SHORT).show();
                                 }
                             });
                     builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {

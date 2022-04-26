@@ -63,6 +63,9 @@ public class WriteFragment extends Fragment {
 
     Bitmap resultPhotoBitmap;
 
+    SimpleDateFormat todayDateFormat;
+    String currentDateString;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -98,6 +101,9 @@ public class WriteFragment extends Fragment {
         if(requestListener != null) {
             requestListener.onRequest("getCurrentLocation"); // 현재 위치 요청하기!!!
         }
+
+        applyItem();
+
         return rootView;
     }
 
@@ -131,6 +137,8 @@ public class WriteFragment extends Fragment {
                 } else {
                     if(mMode == AppConstants.MODE_INSERT) { // 저장
                         saveDiary();
+                        Toast.makeText(getContext(), "저장되었습니다. ", Toast.LENGTH_SHORT).show();
+
                         // 일기가 저장되면 일기 작성화면 초기화(내용, 이미지, 기분 상태)
                         contentEdt.setText(null);
                         // 사진이 삭제했기 때문에 사진 유무 상태를 변경
@@ -152,6 +160,7 @@ public class WriteFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 deleteDiary();
+                Toast.makeText(getContext(), "삭제되었습니다. ", Toast.LENGTH_SHORT).show();
 
                 if(listener != null) {
                     listener.onTabSelected(0); // 리스트 프래그먼트로 화면 전환
@@ -163,6 +172,7 @@ public class WriteFragment extends Fragment {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // 취소할 시 새 글 모드로 변환해야됨
                 if(listener != null) {
                     listener.onTabSelected(0); // 리스트 프래그먼트로 화면 전환
                 }
@@ -181,109 +191,51 @@ public class WriteFragment extends Fragment {
         moodSlider.setInitialIndex(2); // 다섯 개의 기분 중 가운데 기분이 디폴트 값임
     }
 
-    private void saveDiary() {
-        String address = locationTv.getText().toString();
-        String contents = contentEdt.getText().toString();
-        String picturePath = savePicture();
+    public void applyItem() { // 기존 일기 수정인지 새 일기 작성인지 구분해서 작성화면을 보여줌
+        AppConstants.println("applyItem called.");
 
-        String sql = "insert into " + DiaryDatabase.TABLE_DIARY + "(WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE) values(" +
-                "'"+ weatherIndex + "', " + // 왜 날짜는 그대로 0이 들어가고,
-                "'"+ address + "', " +
-                "'"+ "" + "', " +
-                "'"+ "" + "', " +
-                "'"+ contents + "', " +
-                "'"+ moodIndex + "', " + // 왜 기분은 2에서 변해서 들어갈까
-                "'"+ picturePath + "')";
+        if (item != null) { // 기존 일기가 있으면 수정임
+            mMode = AppConstants.MODE_MODIFY; // 수정 모드
 
-        Log.d(TAG, "sql : " + sql);
-        DiaryDatabase database = DiaryDatabase.getInstance(context);
-        database.execSQL(sql); // 데이터 베이스의 쿼리를 실행시켜 데이터를 삽입함
-    }
+            // 기존 데이터 불러오기
+            setWeatherIndex(Integer.parseInt(item.getWeather())); // 왜 날씨는 못 가져오냐
+            setAddress(item.getAddress());
+            setDateString(item.getCreateDateStr());
+            setContents(item.getContents());
 
-    private void modifyDiary() {
-        if(item != null) {
-            String address = locationTv.getText().toString();
-            String contents = contentEdt.getText().toString();
-            String picturePath = savePicture();
+            String picturePath = item.getPicture();
+            AppConstants.println("이미지 경로 : " + picturePath);
 
-            String sql = "update " + DiaryDatabase.TABLE_DIARY +
-                    " set " +
-                    "   WEATHER = '" + weatherIndex + "'" +
-                    "   ,ADDRESS = '" + address + "'" +
-                    "   ,LOCATION_X = '" + "" + "'" +
-                    "   ,LOCATION_Y = '" + "" + "'" +
-                    "   ,CONTENTS = '" + contents + "'" +
-                    "   ,MOOD = '" + moodIndex + "'" +
-                    "   ,PICTURE = '" + picturePath + "'" +
-                    " where " +
-                    "   _id = " + item._id;
+            if (picturePath == null || picturePath.equals("")) { // 이미지가 없으면 noimagefound 이미지 표시
+                pictureInput.setImageResource(R.drawable.noimagefound);
+            } else { // 이미지가 있으면 불러오기
+                setPicture(item.getPicture(), 1);
+            }
+            setMood(item.getMood());
 
-            Log.d(TAG, "sql : " + sql);
-            DiaryDatabase database = DiaryDatabase.getInstance(context);
-            database.execSQL(sql);
+        } else { // 기존 일기가 없으면 새 일기 작성임(모두 초기화)
+            mMode = AppConstants.MODE_INSERT; // 새 글 모드
+            
+            setWeatherIndex(0);
+            setAddress("");
+
+            Date currentDate = new Date();
+            if (todayDateFormat == null) {
+                todayDateFormat = new SimpleDateFormat(getResources().getString(R.string.today_date_format));
+            }
+            currentDateString = todayDateFormat.format(currentDate);
+            AppConstants.println("currentDateString : " + currentDateString);
+            setDateString(currentDateString);
+
+            contentEdt.setText("");
+            pictureInput.setImageResource(R.drawable.noimagefound);
+            setMood("2");
         }
-    }
-
-    private void deleteDiary() {
-        AppConstants.println("삭제 메서드가 호출됨. ");
-
-        if(item != null) {
-            String sql = "delete from " + DiaryDatabase.TABLE_DIARY + " where " + "  _id = " + item._id;
-
-            Log.d(TAG, "sql : " + sql);
-            DiaryDatabase database = DiaryDatabase.getInstance(context);
-            database.execSQL(sql);
-        }
-    }
-
-    private String savePicture() { // 사진을 데이터 베이스에 저장함
-        if (resultPhotoBitmap == null) {
-            AppConstants.println("저장할 사진이 없음. ");
-            return "";
-        }
-        // 이미지는 폴더를 만들어 저장하고, 이미지 경로만 데이터 베이스에 저장함
-        File photoFolder = new File(AppConstants.FOLDER_PHOTO); // 이미지를 저장할 폴더
-        if(!photoFolder.isDirectory()) { // 사진 폴더가 없으면 생성
-            Log.d(TAG, "사진 폴더 생성 : " + photoFolder);
-            photoFolder.mkdirs();
-        }
-
-        String photoFilename = createFilename(); // 현재 날짜를 이미지 파일 이름으로함
-        String picturePath = photoFolder + File.separator + photoFilename; // 이미지 경로
-
-        try {
-            FileOutputStream outstream = new FileOutputStream(picturePath); // 이미지 경로로 파일 생성
-            resultPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, outstream); // 이미지를 압축(100이면 그대로)
-            outstream.close();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        return picturePath;
-    }
-
-    private File createFile() { // 파일 생성
-        // String filename = "capture.jpg"; // sd 카드 파일 이름
-        String filename = createFilename();
-        //File storageDir = Environment.getExternalStorageDirectory();
-        //File outFile = new File(storageDir, filename);
-        File outFile = new File(context.getFilesDir(), filename);
-        Log.d("메인 ", "파일 경로 : " + outFile.getAbsolutePath());
-
-        return outFile;
-    }
-
-    private String createFilename() { // 파일 이름은 현재 날짜를 기준으로함
-        Date curDate = new Date();
-        String curDateStr = String.valueOf(curDate.getTime());
-
-        return curDateStr;
-    }
-
-    public void setDateString(String dateString) {
-        dateTv.setText(dateString);
     }
 
     public void setWeather(String data) {
+        AppConstants.println("setWeather() 호출됨 : " + data);
+
         if (data != null) {
             if (data.equals("맑음")) {
                 weatherIcon.setImageResource(R.drawable.weather_sun);
@@ -342,16 +294,17 @@ public class WriteFragment extends Fragment {
             weatherIcon.setImageResource(R.drawable.weather_snow);
             weatherIndex = 6;
         } else {
-            Log.d(TAG, "알 수 없는 인덱스 : " + index);
+            Log.d(TAG, "알 수 없는 날씨 인덱스 : " + index);
         }
     }
 
-    public void setAddress(String data) {
-        locationTv.setText(data);
-    }
-
-    public void setContents(String data) {
-        contentEdt.setText(data);
+    public void setMood(String mood) {
+        try {
+            moodIndex = Integer.parseInt(mood);
+            moodSlider.setInitialIndex(moodIndex);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setPicture(String picturePath, int sampleSize) {
@@ -362,13 +315,114 @@ public class WriteFragment extends Fragment {
         pictureInput.setImageBitmap(resultPhotoBitmap);
     }
 
-    public void setMood(String mood) {
+    public void setContents(String data) {
+        contentEdt.setText(data);
+    }
+
+    public void setDateString(String dateString) {
+        dateTv.setText(dateString);
+    }
+
+    public void setAddress(String data) {
+        locationTv.setText(data);
+    }
+
+    private void saveDiary() {
+        String address = locationTv.getText().toString();
+        String contents = contentEdt.getText().toString();
+        String picturePath = savePicture();
+
+        String sql = "insert into " + DiaryDatabase.TABLE_DIARY + "(WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE) values(" +
+                "'"+ weatherIndex + "', " + // 왜 날짜는 그대로 0이 들어가고,
+                "'"+ address + "', " +
+                "'"+ "" + "', " +
+                "'"+ "" + "', " +
+                "'"+ contents + "', " +
+                "'"+ moodIndex + "', " + // 왜 기분은 2에서 변해서 들어갈까
+                "'"+ picturePath + "')";
+
+        Log.d(TAG, "sql : " + sql);
+        DiaryDatabase database = DiaryDatabase.getInstance(context);
+        database.execSQL(sql); // 데이터 베이스의 쿼리를 실행시켜 데이터를 삽입함
+    }
+
+    private void modifyDiary() {
+        if(item != null) {
+            String address = locationTv.getText().toString();
+            String contents = contentEdt.getText().toString();
+            String picturePath = savePicture();
+
+            String sql = "update " + DiaryDatabase.TABLE_DIARY +
+                    " set " +
+                    "   WEATHER = '" + weatherIndex + "'" +
+                    "   ,ADDRESS = '" + address + "'" +
+                    "   ,LOCATION_X = '" + "" + "'" +
+                    "   ,LOCATION_Y = '" + "" + "'" +
+                    "   ,CONTENTS = '" + contents + "'" +
+                    "   ,MOOD = '" + moodIndex + "'" +
+                    "   ,PICTURE = '" + picturePath + "'" +
+                    " where " +
+                    "   _id = " + item._id;
+
+            Log.d(TAG, "sql : " + sql);
+            DiaryDatabase database = DiaryDatabase.getInstance(context);
+            database.execSQL(sql);
+        }
+    }
+
+    public void deleteDiary() {
+        AppConstants.println("삭제 메서드가 호출됨. ");
+
+        if(item != null) {
+            String sql = "delete from " + DiaryDatabase.TABLE_DIARY + " where " + "  _id = " + item._id;
+
+            Log.d(TAG, "sql : " + sql);
+            DiaryDatabase database = DiaryDatabase.getInstance(context);
+            database.execSQL(sql);
+        }
+    }
+
+    private String savePicture() { // 사진을 데이터 베이스에 저장함
+        if (resultPhotoBitmap == null) {
+            AppConstants.println("저장할 사진이 없음. ");
+            return "";
+        }
+        // 이미지는 폴더를 만들어 저장하고, 이미지 경로만 데이터 베이스에 저장함
+        File photoFolder = new File(AppConstants.FOLDER_PHOTO); // 이미지를 저장할 폴더
+        if(!photoFolder.isDirectory()) { // 사진 폴더가 없으면 생성
+            Log.d(TAG, "사진 폴더 생성 : " + photoFolder);
+            photoFolder.mkdirs();
+        }
+
+        String photoFilename = createFilename(); // 현재 날짜를 이미지 파일 이름으로함
+        String picturePath = photoFolder + File.separator + photoFilename; // 이미지 경로
+
         try {
-            moodIndex = Integer.parseInt(mood);
-            moodSlider.setInitialIndex(moodIndex);
-        } catch (Exception e) {
+            FileOutputStream outstream = new FileOutputStream(picturePath); // 이미지 경로로 파일 생성
+            resultPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, outstream); // 이미지를 압축(100이면 그대로)
+            outstream.close();
+        } catch(Exception e) {
             e.printStackTrace();
         }
+        return picturePath;
+    }
+
+    private File createFile() { // 파일 생성
+        // String filename = "capture.jpg"; // sd 카드 파일 이름
+        String filename = createFilename();
+        //File storageDir = Environment.getExternalStorageDirectory();
+        //File outFile = new File(storageDir, filename);
+        File outFile = new File(context.getFilesDir(), filename);
+        Log.d("메인 ", "파일 경로 : " + outFile.getAbsolutePath());
+
+        return outFile;
+    }
+
+    private String createFilename() { // 파일 이름은 현재 날짜를 기준으로함
+        Date curDate = new Date();
+        String curDateStr = String.valueOf(curDate.getTime());
+
+        return curDateStr;
     }
 
     public void setItem(Diary item) {
