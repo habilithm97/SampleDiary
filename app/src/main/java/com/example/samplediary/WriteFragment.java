@@ -159,12 +159,27 @@ public class WriteFragment extends Fragment {
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deleteDiary();
-                Toast.makeText(getContext(), "삭제되었습니다. ", Toast.LENGTH_SHORT).show();
+                // 대화상자 생성
+                final androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+                builder.setTitle("삭제하기");
+                builder.setMessage("선택한 일기를 정말로 삭제하시겠습니까 ?");
+                builder.setIcon(R.drawable.delete);
+                builder.setPositiveButton("삭제하기", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteDiary();
+                        Toast.makeText(getContext(), "삭제되었습니다. ", Toast.LENGTH_SHORT).show();
 
-                if(listener != null) {
-                    listener.onTabSelected(0); // 리스트 프래그먼트로 화면 전환
-                }
+                        if(listener != null) {
+                            listener.onTabSelected(0); // 리스트 프래그먼트로 화면 전환
+                        }
+                    }
+                });
+                builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
             }
         });
 
