@@ -187,7 +187,14 @@ public class WriteFragment extends Fragment {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 취소할 시 새 글 모드로 변환해야됨
+                // 취소 클릭 시 새 일기 모드로 전환됨
+                contentEdt.setText(null);
+                // 사진이 삭제했기 때문에 사진 유무 상태를 변경
+                isPhotoCaptured = false;
+                isPhotoFileSaved = false;
+                moodSlider.setInitialIndex(2); // 다섯 개의 기분 중 가운데 기분이 디폴트 값임
+                item = null;
+
                 if(listener != null) {
                     listener.onTabSelected(0); // 리스트 프래그먼트로 화면 전환
                 }
