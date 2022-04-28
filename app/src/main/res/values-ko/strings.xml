@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">싱글다이어리</string>
+
+    <string name="tab_list">리스트</string>
+    <string name="tab_write">작성</string>
+    <string name="tab_graph">그래프</string>
+
+    <string name="write_diary">작성하기</string>
+
+    <string name="today_date_format">MM월 dd일</string>
+    <string name="input_contents_hint">내용을 입력하세요. </string>
+    <string name="save_btn">저장</string>
+    <string name="delete_btn">삭제</string>
+    <string name="close_btn">c취소</string>
+
+    <string name="graph1_title">기분별 비율</string>
+    <string name="graph2_title">요일별 기분</string>
+    <string name="graph3_title">기분 변화</string>
+</resources>

@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Sample Diary</string>
+
+    <string name="tab_list">List</string>
+    <string name="tab_write">Write</string>
+    <string name="tab_graph">Graph</string>
+
+    <string name="write_diary">Write</string>
+
+    <string name="today_date_format">d MMM</string>
+    <string name="input_contents_hint">Input contents</string>
+    <string name="save_btn">Save</string>
+    <string name="delete_btn">Delete</string>
+    <string name="close_btn">Cancel</string>
+
+    <string name="graph1_title">Mood Ratio</string>
+    <string name="graph2_title">Mood per Weekday</string>
+    <string name="graph3_title">Mood Change</string>
+</resources>

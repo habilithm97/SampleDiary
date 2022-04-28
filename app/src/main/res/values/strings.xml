@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">한줄 일기장_프로젝트 샘플</string>
+    <string name="app_name">샘플 다이어리</string>
 
     <string name="tab_title1">목록</string>
     <string name="tab_title2">작성</string>
