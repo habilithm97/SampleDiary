@@ -89,7 +89,10 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                         switch (item.getItemId()) {
                             case R.id.tab1:
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
-                                writeFragmentClear(); // 리스트 탭을 누르게 되면 작성화면이 초기화됨
+
+                                if(WriteFragment.item != null) { // 수정 모드일 경우에만
+                                    writeFragmentClear(); // 리스트 탭을 누르게 되면 작성화면이 초기화됨
+                                }
                                 return true;
 
                             case R.id.tab2:
