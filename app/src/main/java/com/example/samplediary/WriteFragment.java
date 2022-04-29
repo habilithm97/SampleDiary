@@ -44,10 +44,10 @@ public class WriteFragment extends Fragment {
 
     TextView dateTv, locationTv, weatherTv;
     ImageView weatherIcon, pictureInput;
-    EditText contentEdt;
+    static EditText contentEdt;
 
-    boolean isPhotoCaptured;
-    boolean isPhotoFileSaved;
+    static boolean isPhotoCaptured;
+    static boolean isPhotoFileSaved;
     boolean isPhotoCanceled;
 
     int selectedPhotoMenu;
@@ -56,10 +56,10 @@ public class WriteFragment extends Fragment {
 
     static int mMode = AppConstants.MODE_INSERT; // 일기를 새로 만드는지(default), 아니면 기존 일기를 수정하는지를 구분하는 구분자 값
     int weatherIndex = 0; // 날씨 인덱스(디퐅트 맑음)
-    RangeSliderView moodSlider;
+    static RangeSliderView moodSlider;
     int moodIndex = 2; // 기분 인덱스(디폴트 가운데 기분)
 
-    Diary item; // 기존 일기가 있으면 작성화면으로 전환되면서 item 변수 값이 설정되고 화면에는 item 변수가 들어 있는 데이터를 보여줌
+    static Diary item; // 기존 일기가 있으면 작성화면으로 전환되면서 item 변수 값이 설정되고 화면에는 item 변수가 들어 있는 데이터를 보여줌
 
     Bitmap resultPhotoBitmap;
 

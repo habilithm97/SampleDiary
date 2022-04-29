@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                         switch (item.getItemId()) {
                             case R.id.tab1:
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
+                                writeFragmentClear(); // 리스트 탭을 누르게 되면 작성화면이 초기화됨
                                 return true;
 
                             case R.id.tab2:
@@ -135,6 +136,14 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         } else {
             Log.d(TAG, "데이터 베이스가 오픈되지 않음. ");
         }
+    }
+
+    public void writeFragmentClear() {
+        WriteFragment.contentEdt.setText(null);
+        WriteFragment.isPhotoCaptured = false;
+        WriteFragment.isPhotoFileSaved = false;
+        WriteFragment.moodSlider.setInitialIndex(2); // 다섯 개의 기분 중 가운데 기분이 디폴트 값임
+        WriteFragment.item = null;
     }
 
     public void setPicturePath() {
