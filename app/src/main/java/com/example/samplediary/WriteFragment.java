@@ -220,7 +220,7 @@ public class WriteFragment extends Fragment {
             mMode = AppConstants.MODE_MODIFY; // 수정 모드
 
             // 기존 데이터 불러오기
-            setWeatherIndex(Integer.parseInt(item.getWeather())); // 왜 날씨는 못 가져오냐
+            setWeatherIndex(Integer.parseInt(item.getWeather())); // 왜 날씨는 못 가져오냐?
             setAddress(item.getAddress());
             setDateString(item.getCreateDateStr());
             setContents(item.getContents());
@@ -232,6 +232,7 @@ public class WriteFragment extends Fragment {
                 pictureInput.setImageResource(R.drawable.noimagefound);
             } else { // 이미지가 있으면 불러오기
                 setPicture(item.getPicture(), 1);
+                isPhotoFileSaved = true; // 수정화면으로 불러온 이미지가 있는 상태를 나타냄
             }
             setMood(item.getMood());
 
