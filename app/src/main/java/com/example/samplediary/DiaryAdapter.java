@@ -27,7 +27,7 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
 
     OnCardItemClickListener listener;
 
-    public static int position;
+    static int position;
 
     Context context;
 
@@ -140,7 +140,7 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
                     builder.setIcon(R.drawable.delete);
                     builder.setPositiveButton("삭제하기", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    //deleteDiary();
+                                    // deleteDiary();
                                     Toast.makeText(context, "삭제되었습니다. ", Toast.LENGTH_SHORT).show();
                                 }
                             });

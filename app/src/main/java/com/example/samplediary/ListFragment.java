@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import lib.kingja.switchbutton.SwitchMultiButton;
+
+import static com.example.samplediary.DiaryAdapter.position;
 
 public class ListFragment extends Fragment {
     private static final String TAG = "ListFragment";
@@ -92,12 +95,18 @@ public class ListFragment extends Fragment {
         });
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView.scrollToPosition(position);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.smoothScrollToPosition(position);
+            }
+        }, 500);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
         adapter = new DiaryAdapter();
-
         /*
         adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
         adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
@@ -112,7 +121,6 @@ public class ListFragment extends Fragment {
          */
 
         recyclerView.setAdapter(adapter);
-
         adapter.setOnItemClickListener(new OnCardItemClickListener() {
             @Override
             public void onItemClick(DiaryAdapter.ViewHolder holder, View view, int position) {

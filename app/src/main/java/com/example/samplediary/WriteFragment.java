@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class WriteFragment extends Fragment {
     private static final String TAG = "WriteFragment";
@@ -145,6 +146,7 @@ public class WriteFragment extends Fragment {
                         isPhotoCaptured = false;
                         isPhotoFileSaved = false;
                         moodSlider.setInitialIndex(2); // 다섯 개의 기분 중 가운데 기분이 디폴트 값임
+
                     } else if(mMode == AppConstants.MODE_MODIFY) { // 수정
                         modifyDiary();
                     }
