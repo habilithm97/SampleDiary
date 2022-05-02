@@ -327,7 +327,9 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                     WeatherItem item = weatherResult.body.datas.get(0);
                     currentWeather = item.wfKor;
                     if (writeFragment != null) {
-                        writeFragment.setWeather(item.wfKor); // 기상청의 현재 날씨 문자열을 받아 아이콘을 설정함
+                        if(writeFragment.item == null) {
+                            writeFragment.setWeather(item.wfKor); // 기상청의 현재 날씨 문자열을 받아 아이콘을 설정함
+                        }
                     }
 
                     // 위치를 한번 확인한 후에는 위치 요청 서비스를 중지함

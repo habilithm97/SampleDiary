@@ -37,6 +37,8 @@ public class ListFragment extends Fragment {
 
     onTabItemSelectedListener listener;
 
+    static Diary item;
+
     @Override // 프래그먼트가 액티비티에 붙을 때 호출됨 -> 액티비티를 위해 설정해야하는 정보들은 이 곳에서 처리함
     public void onAttach(@NonNull Context context) { // context 객체나 리스너 객체를 참조하여 변수에 할당
         super.onAttach(context);
@@ -124,8 +126,9 @@ public class ListFragment extends Fragment {
         adapter.setOnItemClickListener(new OnCardItemClickListener() {
             @Override
             public void onItemClick(DiaryAdapter.ViewHolder holder, View view, int position) {
-                Diary item = adapter.getItem(position);
+                item = adapter.getItem(position);
                 Log.d(TAG, "아이템 선택됨 : " + item.get_id());
+                Toast.makeText(getContext(), "날씨 확인 : "  + item.weather, Toast.LENGTH_SHORT).show();
 
                 if (listener != null) {
                     listener.showWriteFragment(item);

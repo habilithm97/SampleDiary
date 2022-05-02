@@ -216,13 +216,14 @@ public class WriteFragment extends Fragment {
     }
 
     public void applyItem() { // 기존 일기 수정인지 새 일기 작성인지 구분해서 작성화면을 보여줌
-        AppConstants.println("applyItem called.");
+        AppConstants.println("applyItem() 호출됨. ");
 
         if (item != null) { // 기존 일기가 있으면 수정임
             mMode = AppConstants.MODE_MODIFY; // 수정 모드
 
             // 기존 데이터 불러오기
-            setWeatherIndex(Integer.parseInt(item.getWeather())); // 왜 날씨는 못 가져오냐?
+            // setWeatherIndex(Integer.parseInt(item.getWeather())); // 왜 날씨는 못 가져오냐?
+            setWeatherIndex(Integer.parseInt(ListFragment.item.weather));
             setAddress(item.getAddress());
             setDateString(item.getCreateDateStr());
             setContents(item.getContents());
@@ -299,24 +300,31 @@ public class WriteFragment extends Fragment {
     public void setWeatherIndex(int index) {
         if (index == 0) {
             weatherIcon.setImageResource(R.drawable.weather_sun);
+            weatherTv.setText("맑음");
             weatherIndex = 0;
         } else if (index == 1) {
             weatherIcon.setImageResource(R.drawable.weather_mini_cloud);
+            weatherTv.setText("구름 조금");
             weatherIndex = 1;
         } else if (index == 2) {
             weatherIcon.setImageResource(R.drawable.weather_sun_cloud);
+            weatherTv.setText("구름 많음");
             weatherIndex = 2;
         } else if (index == 3) {
             weatherIcon.setImageResource(R.drawable.weather_cloud);
+            weatherTv.setText("흐림");
             weatherIndex = 3;
         } else if (index == 4) {
             weatherIcon.setImageResource(R.drawable.weather_rain);
+            weatherTv.setText("비");
             weatherIndex = 4;
         } else if (index == 5) {
             weatherIcon.setImageResource(R.drawable.weather_snow_rain);
+            weatherTv.setText("눈/비");
             weatherIndex = 5;
         } else if (index == 6) {
             weatherIcon.setImageResource(R.drawable.weather_snow);
+            weatherTv.setText("눈");
             weatherIndex = 6;
         } else {
             Log.d(TAG, "알 수 없는 날씨 인덱스 : " + index);
