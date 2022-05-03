@@ -11,13 +11,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
+
+import com.example.samplediary.Diary;
+import com.example.samplediary.DiaryAdapter;
+import com.example.samplediary.onTabItemSelectedListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,10 +32,15 @@ import java.util.Date;
 
 import lib.kingja.switchbutton.SwitchMultiButton;
 
+import static com.example.samplediary.DiaryAdapter.items;
 import static com.example.samplediary.DiaryAdapter.position;
 
 public class ListFragment extends Fragment {
     private static final String TAG = "ListFragment";
+
+    // 검색 필터 파트
+    //ArrayList<Diary> items, filteredList; // 검색되지 않은 리스트와 검색된 리스트
+    EditText searchEdt;
 
     RecyclerView recyclerView;
     DiaryAdapter adapter;
@@ -96,19 +108,6 @@ public class ListFragment extends Fragment {
             }
         });
 
-        recyclerView = rootView.findViewById(R.id.recyclerView);
-        recyclerView.scrollToPosition(position);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                recyclerView.smoothScrollToPosition(position);
-            }
-        }, 500);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        adapter = new DiaryAdapter();
         /*
         adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
         adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
@@ -122,6 +121,41 @@ public class ListFragment extends Fragment {
         adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
          */
 
+        /*
+        // 검색 필터 파트
+        items = new ArrayList<>(); // 검색되지 않은 리스트
+        filteredList = new ArrayList<>(); // 검색된 리스트
+        searchEdt = (EditText)rootView.findViewById(R.id.searchEdt);
+        searchEdt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { // 입력하기 전에 처리
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { // 입력과 동시에 처리
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { // 입력 후에 처리
+                String str = searchEdt.getText().toString();
+                searchFilter(str);
+            }
+        });
+        adapter = new DiaryAdapter(items, this); // 이 부분에서 어댑터 클래스와 연결
+        */
+        adapter = new DiaryAdapter();
+
+        recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView.scrollToPosition(position);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.smoothScrollToPosition(position);
+            }
+        }, 500);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new OnCardItemClickListener() {
             @Override
@@ -192,4 +226,16 @@ public class ListFragment extends Fragment {
         }
         return recordCount;
     }
+
+    /*
+    public void searchFilter(String str) { // 검색창에 입력한 문자열이 파라미터로 전달됨
+        filteredList.clear();
+
+        for(int i = 0; i < items.size(); i++) {
+            if(items.get(i).getContents().toLowerCase().contains(str.toLowerCase()) || items.get(i).getAddress().toLowerCase().contains(str.toLowerCase())) {
+                filteredList.add(items.get(i));
+            }
+        }
+        adapter.filterList(filteredList);
+    } */
 }

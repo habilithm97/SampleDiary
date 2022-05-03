@@ -5,6 +5,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+    <EditText
+        android:id="@+id/searchEdt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#EDD5B2"
+        android:padding="5dp"
+        android:hint="키워드를 입력하세요. " />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
