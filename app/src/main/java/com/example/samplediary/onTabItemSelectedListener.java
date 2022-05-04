@@ -4,5 +4,5 @@ package com.example.samplediary;
 public interface onTabItemSelectedListener {
     public void onTabSelected(int position);
     public void showWriteFragment(Diary item);
-    public void showWriteFragment2();
+    //public void showWriteFragment2();
 }

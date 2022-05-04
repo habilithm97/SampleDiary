@@ -251,9 +251,12 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
     public void onTabSelected(int position) {
         if(position == 0) {
             bottomNavigationView.setSelectedItemId(R.id.tab1);
-        } else if(position == 2) {
+        } else if(position == 1) {
+            writeFragment = new WriteFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, writeFragment).commit();
+
             bottomNavigationView.setSelectedItemId(R.id.tab2);
-        } else if(position == 3) {
+        } else if(position == 2) {
             bottomNavigationView.setSelectedItemId(R.id.tab3);
         }
     }
@@ -266,10 +269,11 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         getSupportFragmentManager().beginTransaction().replace(R.id.container, writeFragment).commit();
     }
 
+    /*
     public void showWriteFragment2() {
         WriteFragment writeFragment = new WriteFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.container, writeFragment).commit();
-    }
+    } */
 
     public void getCurrentWeather() { // 현재 날씨 가져오기
         // GridUtill 객체의 getGrid() 메서드로 격자 번호를 확인

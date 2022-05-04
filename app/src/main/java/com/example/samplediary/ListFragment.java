@@ -94,13 +94,13 @@ public class ListFragment extends Fragment {
         writeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*
                 if (listener != null) {
                     listener.onTabSelected(1); // 작성하기 버튼을 누르면 두 번째 프래그먼트(작성화면)를 띄워줌
-                } */
+                }
+                /*
                 if (listener != null) {
                     listener.showWriteFragment2();
-                }
+                } */
             }
         });
 
