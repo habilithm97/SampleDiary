@@ -3,6 +3,9 @@ package com.example.samplediary;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
 import android.content.Context;
@@ -260,6 +263,11 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         writeFragment = new WriteFragment();
         writeFragment.setItem(item);
 
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, writeFragment).commit();
+    }
+
+    public void showWriteFragment2() {
+        WriteFragment writeFragment = new WriteFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.container, writeFragment).commit();
     }
 
