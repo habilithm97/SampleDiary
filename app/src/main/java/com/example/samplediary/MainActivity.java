@@ -33,6 +33,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.File;
 import java.security.Permission;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -65,11 +66,15 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
     
     Location currentLocation; // 현재 위치를 담고 있음
     String currentWeather; // 현재 날씨를 담고 있음
+    String currentAddress;
     GPSListener gpsListener; // 위치 정보를 수신함
 
     int locationCount = 0; // 위치 정보를 확인한 횟수(위치를 한 번 확인한 후에는 위치 요청을 취소할 수 있도록)
 
     public static DiaryDatabase diaryDatabase = null; // 데이터 베이스 인스턴스
+
+    SimpleDateFormat todayDateFormat;
+    String adminArea;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,12 +177,19 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
 
     public void getCurrentLocation() { // 현재 위치 요청
         Date currentDate = new Date(); // 현재 날짜를 가져와서
-        String currentDateString = AppConstants.dateFormat3.format(currentDate); // 형식에 맞는 현재 날짜를 변수에 할당한 후에(yyyy년 MM월 dd일)
+
+        //String currentDateString = AppConstants.dateFormat3.format(currentDate); // 형식에 맞는 현재 날짜를 변수에 할당한 후에(yyyy년 MM월 dd일)
+        if (todayDateFormat == null) {
+            todayDateFormat = new SimpleDateFormat(getResources().getString(R.string.today_date_format));
+        }
+        String currentDateString = todayDateFormat.format(currentDate);
+        AppConstants.println("currentDateString : " + currentDateString);
+
         if (writeFragment != null) {
             writeFragment.setDateString(currentDateString); // 두 번째 프래그먼트 상단에 현재 날짜를 표시함
         }
 
-        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationManager manager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         try {
             currentLocation = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER); // 위치 관리자의 위치 제공자로 최근 위치 정보를 확인해서 현재 위치 변수에 할당함
             if (currentLocation != null) {
@@ -185,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                 double longitude = currentLocation.getLongitude();
                 String message = "최근 위치 : 위도 : " + latitude + "\n경도:" + longitude;
                 println(message);
-                //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
                 // 현재 위치가 확인되면 호출됨
                 getCurrentWeather(); // 현재 위치를 이용해서 날씨 확인
@@ -198,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
             float minDistance = 0;
 
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, gpsListener); // 현재 위치 갱신
-            println("현재 위치가 갱신되었습니다.");
+            println("현재 위치가 요청 되었습니다.");
 
         } catch(SecurityException e) {
             e.printStackTrace();
@@ -234,17 +245,14 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-
         }
 
         @Override
         public void onProviderEnabled(@NonNull String provider) {
-
         }
 
         @Override
         public void onProviderDisabled(@NonNull String provider) {
-
         }
     }
 
@@ -281,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
 
         double gridX = gridMap.get("x");
         double gridY = gridMap.get("y");
-        println("x -> " + gridX + ", " + "y -> " + gridY);
+        println("x좌표 : " + gridX + ", " + "y좌표 : " + gridY);
 
         sendWeatherRequest(gridX, gridY);
     }
@@ -370,13 +378,38 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        
+        if(addresses != null && addresses.size() > 0) {
+            currentAddress = null;
+
+            Address address = addresses.get(0);
+
+            if(address.getLocality() != null) {
+                currentAddress = address.getLocality(); // 현재 주소(시/도)
+            }
+
+            if (address.getSubLocality() != null) {
+                if (currentAddress != null) { // 현재 주소가 null이 아니면
+                    currentAddress +=  " " + address.getSubLocality(); // 현재 주소(시/도)에 (군/구) 추가
+                } else { // 현재 주소가 null이면
+                    currentAddress = address.getSubLocality(); // 현재 주소(군/구) -> 지금 이거로 뜸;
+                }
+            }
+
+            String country = address.getCountryName(); // 국가
+            adminArea = address.getAdminArea(); // 시/도
+            println("주소 : " + country + " " + adminArea + " " + currentAddress);
+
+        /*
         if(addresses != null && addresses.size() > 0) {
             Address address = addresses.get(0);
             String currentAddress = address.getAdminArea() + " " + address.getSubLocality(); // 시 군/구
             println("주소 : " + currentAddress);
+         */
 
             if(writeFragment != null) {
-                writeFragment.setAddress(currentAddress);
+                writeFragment.setAddress(adminArea + " " + currentAddress);
             }
         }
     }

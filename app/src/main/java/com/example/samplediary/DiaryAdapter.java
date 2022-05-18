@@ -21,8 +21,8 @@ import java.util.ArrayList;
 
 public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> implements OnCardItemClickListener {
 
-    //static ArrayList<Diary> items;
     static ArrayList<Diary> items = new ArrayList<>();
+    //ArrayList<Diary> items;
     //ListFragment listFragment;
 
     int layoutType = 0;
@@ -56,6 +56,13 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
         holder.setItem(item);
         holder.setLayoutType(layoutType);
     }
+
+    /*
+    public void filterList(ArrayList<Diary> filteredList) {
+        // 전달 받은 필터링 된 아이템 어레이 리스트로 변경함
+       items = filteredList;
+        notifyDataSetChanged();
+    } */
 
     @Override
     public int getItemCount() {
@@ -275,10 +282,5 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
         public boolean onLongClick(View v) {
             return true;
         }
-    }
-
-    public void filterList(ArrayList<Diary> filteredList) {
-        items = filteredList;
-        notifyDataSetChanged();
     }
 }

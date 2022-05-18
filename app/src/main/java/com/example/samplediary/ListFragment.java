@@ -32,18 +32,15 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import lib.kingja.switchbutton.SwitchMultiButton;
-
-import static com.example.samplediary.DiaryAdapter.items;
 import static com.example.samplediary.DiaryAdapter.position;
 
 public class ListFragment extends Fragment {
     private static final String TAG = "ListFragment";
 
     // 검색 필터 파트
-    //ArrayList<Diary> items, filteredList; // 검색되지 않은 리스트와 검색된 리스트
+    //ArrayList<Diary> items, filteredList; // 어댑터에서 가져온 아이템 어레이 리스트와 필터링된 아이템 어레이 리스트
     EditText searchEdt;
 
-    RecyclerView recyclerView;
     DiaryAdapter adapter;
 
     Context context;
@@ -97,10 +94,6 @@ public class ListFragment extends Fragment {
                 if (listener != null) {
                     listener.onTabSelected(1); // 작성하기 버튼을 누르면 두 번째 프래그먼트(작성화면)를 띄워줌
                 }
-                /*
-                if (listener != null) {
-                    listener.showWriteFragment2();
-                } */
             }
         });
 
@@ -128,29 +121,11 @@ public class ListFragment extends Fragment {
 
         /*
         // 검색 필터 파트
-        items = new ArrayList<>(); // 검색되지 않은 리스트
-        filteredList = new ArrayList<>(); // 검색된 리스트
-        searchEdt = (EditText)rootView.findViewById(R.id.searchEdt);
-        searchEdt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { // 입력하기 전에 처리
-            }
+        items = new ArrayList<>(); // 아이템 어레이 리스트
+        filteredList = new ArrayList<>(); // 필터링된 아이템 어레이 리스트
+         */
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { // 입력과 동시에 처리
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) { // 입력 후에 처리
-                String str = searchEdt.getText().toString();
-                searchFilter(str);
-            }
-        });
-        adapter = new DiaryAdapter(items, this); // 이 부분에서 어댑터 클래스와 연결
-        */
-        adapter = new DiaryAdapter();
-
-        recyclerView = rootView.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.scrollToPosition(position);
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -159,6 +134,8 @@ public class ListFragment extends Fragment {
             }
         }, 500);
 
+        //adapter = new DiaryAdapter(items, this); // 이 부분에서 어댑터 클래스와 연결
+        adapter = new DiaryAdapter();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -174,6 +151,24 @@ public class ListFragment extends Fragment {
                 }
             }
         });
+
+        /*
+        searchEdt = (EditText)rootView.findViewById(R.id.searchEdt);
+        searchEdt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { // 입력하기 전에 처리
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { // 입력과 동시에 처리
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { // 입력 후에 처리
+                String str = searchEdt.getText().toString();
+                searchFilter(str);
+            }
+        }); */
     }
 
     public int loadDiaryListData() { // 저장된 데이터를 불러와서 리스트로 보여줌
@@ -234,13 +229,13 @@ public class ListFragment extends Fragment {
 
     /*
     public void searchFilter(String str) { // 검색창에 입력한 문자열이 파라미터로 전달됨
-        filteredList.clear();
+        filteredList.clear(); // 필터링된 아이템 어레이 리스트를 비우고
 
         for(int i = 0; i < items.size(); i++) {
-            if(items.get(i).getContents().toLowerCase().contains(str.toLowerCase()) || items.get(i).getAddress().toLowerCase().contains(str.toLowerCase())) {
-                filteredList.add(items.get(i));
+            if(items.get(i).getContents().toLowerCase().contains(str.toLowerCase())) { // 입력한 문자열과 일치하는 아이템이면
+                filteredList.add(items.get(i)); // 필터링된 아이템 어레이 리스트에 추가하기
             }
         }
-        adapter.filterList(filteredList);
+        adapter.filterList(filteredList); // 어댑터의 filterList 메서드를 호출해서 필터링된 아이템 어레이 리스트를 파라미터로 전달함
     } */
 }
