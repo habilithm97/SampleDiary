@@ -43,7 +43,9 @@ public class WriteFragment extends Fragment {
     onTabItemSelectedListener listener;
     OnRequestListener requestListener;
 
-    TextView dateTv, locationTv, weatherTv;
+    TextView dateTv;
+    TextView locationTv;
+    TextView weatherTv;
     ImageView weatherIcon, pictureInput;
     static EditText contentEdt;
 

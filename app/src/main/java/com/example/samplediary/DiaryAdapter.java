@@ -46,10 +46,10 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
 
         context = viewGroup.getContext();
 
-        return new ViewHolder(itemView, this, layoutType); // 뷰홀더 객체를 생성하면서 뷰 객체와 리스너, 레이아웃 타입을 전달하고 그 뷰홀더 객체 리턴함
+        return new ViewHolder(itemView, this, layoutType); // ViewHolder 객체를 생성하면서 View 객체와 listener, layout Type을 전달하고 그 ViewHolder 객체를 return
     }
 
-    @Override // 생성된 뷰홀더에 데이터를 바인딩해줌, 뷰홀더가 재사용될 때 뷰 객체는 기존 것 그대로 사용하고 데이터만 바꿔줌
+    @Override // 생성된 ViewHolder에 데이터를 Binding 함, ViewHolder가 재사용될 때 View 객체는 기존 것 그대로 사용하고 데이터만 바꿔줌
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Diary item = items.get(position);
 
@@ -67,10 +67,6 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
     @Override
     public int getItemCount() {
         return items.size();
-    }
-
-    public void addItem(Diary item) {
-        items.add(item);
     }
 
     public void setItems(ArrayList<Diary> items) {
@@ -96,17 +92,17 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
         layoutType = position;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener{
+    // ViewHolder 클래스
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
 
         LinearLayout layout1, layout2;
 
         ImageView moodImg, moodImg2, pictureImg, pictureImg2, weatherImg, weatherImg2;
-
         TextView contentsTv, contentsTv2, locationTv, locationTv2, dateTv, dateTv2;
 
-        // 뷰홀더 생성자로 전달되는 뷰 객체를 참조함(아이템들은 뷰로 만들어지고, 뷰는 뷰홀더에 담아둠)
+        // ViewHolder 생성자로 전달되는 View 객체를 참조함(아이템들은 View로 만들어지고, View는 ViewHolder에 담아둠)
         public ViewHolder(@NonNull View itemView, final OnCardItemClickListener listener, int layoutType) {
-            super(itemView); // 이 뷰 객체를 부모 클래스의 변수에 담아둠
+            super(itemView); // 이 View 객체를 부모 클래스의 변수에 담아둠
 
             layout1 = itemView.findViewById(R.id.layout1);
             layout2 = itemView.findViewById(R.id.layout2);
@@ -129,6 +125,7 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
             dateTv = itemView.findViewById(R.id.dateTv);
             dateTv2 = itemView.findViewById(R.id.dateTv2);
 
+            // 각 아이템 클릭 시 동작
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -139,12 +136,14 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
                     }
                 }
             });
+
             setLayoutType(layoutType);
 
+            // 각 아이템을 길게 클릭 시 동작
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    position = getAdapterPosition(); // 클릭한 위치를 가져옴
+                    position = getAdapterPosition();
 
                     // 대화상자 생성
                     final AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -154,7 +153,7 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
                     builder.setPositiveButton("삭제하기", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     // deleteDiary();
-                                    Toast.makeText(context, "삭제되었습니다. ", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context, "삭제되었습니다. ", Toast.LENGTH_SHORT).show();
                                 }
                             });
                     builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -179,14 +178,15 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
             int weatherIndex = Integer.parseInt(weather);
             setWeatherImg(weatherIndex);
 
-            // 사진 설정
+            // 이미지 설정
             String picturePath = item.getPicture();
-            if (picturePath != null && !picturePath.equals("")) { // 사진이 있으면
-                // 사진 보이게
+            if (picturePath != null && !picturePath.equals("")) { // 이미지가 있으면
+                // 이미지 이모티콘 보이게
                 pictureImg.setVisibility(View.VISIBLE);
                 pictureImg2.setVisibility(View.VISIBLE);
-                pictureImg2.setImageURI(Uri.parse("file://" + picturePath));
-            } else { // 사진이 없으면
+                pictureImg2.setImageURI(Uri.parse("file://" + picturePath)); // 이미지 가져와서 설정
+            } else { // 이미지가 없으면
+                // 이미지 이모티콘 안보이게
                 pictureImg.setVisibility(View.GONE);
                 pictureImg2.setVisibility(View.GONE);
                 pictureImg2.setImageResource(R.drawable.noimagefound);
@@ -268,11 +268,11 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
             }
         }
 
-        public void setLayoutType(int layoutType) { // 아이템을 내용 중심으로 or 사진 중심으로 다른 레이아웃
+        public void setLayoutType(int layoutType) { // 아이템을 내용 중심으로 보여줄지 이미지 중심으로 보여줄지 선택할 수 있음
             if (layoutType == 0) { // 내용 중심
                 layout1.setVisibility(View.VISIBLE);
                 layout2.setVisibility(View.GONE);
-            } else if (layoutType == 1) { // 사진 중심
+            } else if (layoutType == 1) { // 이미지 중심
                 layout1.setVisibility(View.GONE);
                 layout2.setVisibility(View.VISIBLE);
             }

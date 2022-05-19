@@ -144,7 +144,6 @@ public class ListFragment extends Fragment {
             public void onItemClick(DiaryAdapter.ViewHolder holder, View view, int position) {
                 item = adapter.getItem(position);
                 Log.d(TAG, "아이템 선택됨 : " + item.get_id());
-                Toast.makeText(getContext(), "날씨 확인 : "  + item.weather, Toast.LENGTH_SHORT).show();
 
                 if (listener != null) {
                     listener.showWriteFragment(item);

@@ -64,17 +64,16 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
 
     BottomNavigationView bottomNavigationView;
     
-    Location currentLocation; // 현재 위치를 담고 있음
-    String currentWeather; // 현재 날씨를 담고 있음
+    Location currentLocation;
+    String currentWeather;
     String currentAddress;
     GPSListener gpsListener; // 위치 정보를 수신함
 
     int locationCount = 0; // 위치 정보를 확인한 횟수(위치를 한 번 확인한 후에는 위치 요청을 취소할 수 있도록)
 
-    public static DiaryDatabase diaryDatabase = null; // 데이터 베이스 인스턴스
+    public static DiaryDatabase diaryDatabase = null;
 
     SimpleDateFormat todayDateFormat;
-    String adminArea;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                             case R.id.tab1:
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
 
-                                if(WriteFragment.item != null) { // 수정 모드일 경우에만
+                                if(WriteFragment.item != null) { // (작성화면의 아이템이 있을 경우)수정 모드일 경우에만
                                     writeFragmentClear(); // 리스트 탭을 누르게 되면 작성화면이 초기화됨
                                 }
                                 return true;
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                     }
                 });
 
-        setPicturePath(); // 사진 경로 접근 및 폴더 없으면 폴더 생성
+        setPicturePath(); // 이미지 경로 접근 및 폴더 없으면 폴더 생성
 
         // 앱이 처음 시작될 때 AutoPermissions 승인 요청을 처리하기 위해
         AutoPermissions.Companion.loadAllPermissions(this, 101);
@@ -127,29 +126,32 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
     protected void onDestroy() {
         super.onDestroy();
 
+        // 데이터베이스가 있으면 닫고 초기화
         if(diaryDatabase != null) {
             diaryDatabase.close();
             diaryDatabase = null;
         }
     }
 
-    // 데이터 베이스 열기(데이터 베이스가 없으면 생성)
+    // 데이터베이스 오픈(데이터베이스가 없으면 생성)
     public void openDatabase() {
+        // 데이터베이스가 있으면 닫은 후 초기화하고
         if(diaryDatabase != null) {
             diaryDatabase.close();
             diaryDatabase = null;
         }
 
-        diaryDatabase = DiaryDatabase.getInstance(this);
+        diaryDatabase = DiaryDatabase.getInstance(this); // 데이터베이스 클래스에서 가져옴
+
         boolean isOpen = diaryDatabase.open();
         if(isOpen) {
-            Log.d(TAG, "데이터 베이스가 오픈됨. ");
+            Log.d(TAG, "데이터베이스가 오픈됨. ");
         } else {
-            Log.d(TAG, "데이터 베이스가 오픈되지 않음. ");
+            Log.d(TAG, "데이터베이스가 오픈되지 않음. ");
         }
     }
 
-    public void writeFragmentClear() {
+    public void writeFragmentClear() { // 작성 화면 초기화
         WriteFragment.contentEdt.setText(null);
         WriteFragment.isPhotoCaptured = false;
         WriteFragment.isPhotoFileSaved = false;
@@ -162,7 +164,8 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         AppConstants.FOLDER_PHOTO = folderPath + File.separator + "photo";
 
         File photoFolder = new File(AppConstants.FOLDER_PHOTO);
-        if(!photoFolder.exists()) { // 사진 폴더가 존재하지 않으면 생성
+        // 이미지 폴더가 존재하지 않으면 생성
+        if(!photoFolder.exists()) {
             photoFolder.mkdir();
         }
     }
@@ -170,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
     public void onRequest(String command) { // 두 번째 프래그먼트에서 호출됨
         if(command != null) {
             if(command.equals("getCurrentLocation")) {
-                getCurrentLocation(); // 위치 확인이 시작됨
+                getCurrentLocation(); // 현재 위치 확인이 시작됨
             }
         }
     }
@@ -178,11 +181,11 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
     public void getCurrentLocation() { // 현재 위치 요청
         Date currentDate = new Date(); // 현재 날짜를 가져와서
 
-        //String currentDateString = AppConstants.dateFormat3.format(currentDate); // 형식에 맞는 현재 날짜를 변수에 할당한 후에(yyyy년 MM월 dd일)
+        //String currentDateString = AppConstants.dateFormat3.format(currentDate); // 형식에 맞는 현재 날짜를 변수에 할당
         if (todayDateFormat == null) {
             todayDateFormat = new SimpleDateFormat(getResources().getString(R.string.today_date_format));
         }
-        String currentDateString = todayDateFormat.format(currentDate);
+        String currentDateString = todayDateFormat.format(currentDate); // 형식에 맞는 현재 날짜를 변수에 할당
         AppConstants.println("currentDateString : " + currentDateString);
 
         if (writeFragment != null) {
@@ -209,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
             float minDistance = 0;
 
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, gpsListener); // 현재 위치 갱신
-            println("현재 위치가 요청 되었습니다.");
+            println("현재 위치가 갱신되었습니다.");
 
         } catch(SecurityException e) {
             e.printStackTrace();
@@ -260,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         if(position == 0) {
             bottomNavigationView.setSelectedItemId(R.id.tab1);
         } else if(position == 1) {
+            // 첫 번째 프래그먼트 상단의 작성하기 버튼을 누르면 동작
             writeFragment = new WriteFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.container, writeFragment).commit();
 
@@ -270,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
     }
 
     @Override
-    public void showWriteFragment(Diary item) {
+    public void showWriteFragment(Diary item) { // 기존의 저장된 아이템을 불러와서 두 번째 프래그먼트에 보여줄 때 호출됨
         writeFragment = new WriteFragment();
         writeFragment.setItem(item);
 
@@ -379,7 +383,6 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
             e.printStackTrace();
         }
 
-        
         if(addresses != null && addresses.size() > 0) {
             currentAddress = null;
 
@@ -398,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
             }
 
             String country = address.getCountryName(); // 국가
-            adminArea = address.getAdminArea(); // 시/도
+            String adminArea = address.getAdminArea(); // 시/도
             println("주소 : " + country + " " + adminArea + " " + currentAddress);
 
         /*
