@@ -39,6 +39,12 @@ import java.util.Map;
  1. 클래스를 만들고 Application 클래스를 상속한 다음에 매니페스트의 anodroid:name 속성에 등록해서 사용함
  2. 어떤 값을 컴포넌트 사이에서 공유해서 사용할 수 있게 해줌
  3. Application 클래스를 상속 받은 클래스는 첫 번째 액티비티봐 먼저 인스턴스화됨
+
+*SingleTon Pattern
+ -특정 클래스에 대한 instance를 단 한 번만 static 메모리 영역에 할당하고 해당 클래스에 대한 생성자를 여러 번 호출하더라도 최초에
+   생성된 객체를 return -> 앱의 특정 클래스에 대한 유일 객체를 보장하는 디자인 형태임
+
+ -외부에서 생성자에 접근하지 못하도록 막음(private) -> getInstance()로 instance를 생성 -> static instance를 확인해서 값이 없으면 생성, 있으면 그대로 return
  */
 
 public class MyApplication extends Application {
@@ -50,6 +56,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // 요청 큐가 없으면 생성
         if(requestQueue == null) {
             requestQueue = Volley.newRequestQueue(getApplicationContext(), new HurlStack() {
                 @Override

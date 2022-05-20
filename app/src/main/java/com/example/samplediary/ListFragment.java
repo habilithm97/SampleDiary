@@ -50,7 +50,7 @@ public class ListFragment extends Fragment {
     static Diary item;
 
     @Override // 프래그먼트가 액티비티에 붙을 때 호출됨 -> 액티비티를 위해 설정해야하는 정보들은 이 곳에서 처리함
-    public void onAttach(@NonNull Context context) { // context 객체나 리스너 객체를 참조하여 변수에 할당
+    public void onAttach(@NonNull Context context) { // context 객체나 listener 객체를 참조하여 변수에 할당
         super.onAttach(context);
 
         this.context = context;
@@ -64,7 +64,7 @@ public class ListFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() { // 프래그먼트가 액티비티에서 내려올 때  호출됨
+    public void onDetach() { // 프래그먼트가 액티비티에서 내려올 때 호출됨
         super.onDetach();
 
         if (context != null) {
@@ -105,20 +105,6 @@ public class ListFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
-
-        /*
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 공부", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "점심에 동네 떡볶이 맛집 갔다옴", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "오늘도 열심히 운동", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "안녕하세요", "0", "cube.jpg", "2월 17일"));
-        adapter.addItem(new Diary(0, "서울특별시 신짱구", "0", ", ", ", ", "하빌리즘 입니다", "0", "cube.jpg", "2월 17일"));
-         */
-
         /*
         // 검색 필터 파트
         items = new ArrayList<>(); // 아이템 어레이 리스트
@@ -126,6 +112,7 @@ public class ListFragment extends Fragment {
          */
 
         RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
+        // 첫 번째 프래그먼트로 이동 시 포커스를 맨 위로 이동함
         recyclerView.scrollToPosition(position);
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -139,6 +126,8 @@ public class ListFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+
+        // 각 아이템들을 클릭하면 두 번째 프래그먼트인 작성화면으로 화면이 전환되어 아이템에 저장된 데이터가 표시됨
         adapter.setOnItemClickListener(new OnCardItemClickListener() {
             @Override
             public void onItemClick(DiaryAdapter.ViewHolder holder, View view, int position) {
@@ -170,15 +159,15 @@ public class ListFragment extends Fragment {
         }); */
     }
 
-    public int loadDiaryListData() { // 저장된 데이터를 불러와서 리스트로 보여줌
+    public int loadDiaryListData() { // 저장된 데이터를 불러와서 리스트에 보여줌
         AppConstants.println("리스트로 보여줄 데이터를 불러옴. ");
 
-        // 작성 일자를 기준으로 테이블의 필드들을 조회하는 sql 변수 할당
+        // 작성 일자(CREATE_DATE)를 기준으로 테이블의 필드들을 조회하는 sql 변수 할당
         String sql = "select _id, WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE, CREATE_DATE, MODIFY_DATE from " + DiaryDatabase.TABLE_DIARY + " order by CREATE_DATE desc";
 
         int recordCount = -1;
 
-        DiaryDatabase database = DiaryDatabase.getInstance(context);
+        DiaryDatabase database = DiaryDatabase.getInstance(context); // 데이터베이스 접근
         // 데이터 베이스가 있을 경우 Cursor를 사용해 데이터 조회하기
         if (database != null) {
             Cursor outCursor = database.rawQuery(sql);

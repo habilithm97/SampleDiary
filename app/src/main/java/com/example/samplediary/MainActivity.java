@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
             diaryDatabase = null;
         }
 
-        diaryDatabase = DiaryDatabase.getInstance(this); // 데이터베이스 클래스에서 가져옴
+        diaryDatabase = DiaryDatabase.getInstance(this); // 데이터베이스 접근
 
         boolean isOpen = diaryDatabase.open();
         if(isOpen) {
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
     } */
 
     public void getCurrentWeather() { // 현재 날씨 가져오기
-        // GridUtill 객체의 getGrid() 메서드로 격자 번호를 확인
+        // GridUtill 객체의 getGrid()로 격자 번호 확인
         Map<String, Double> gridMap = GridUtil.getGrid(currentLocation.getLatitude(), currentLocation.getLongitude());
 
         double gridX = gridMap.get("x");
@@ -305,14 +305,15 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
         url += "&gridy=" + Math.round(gridY);
 
         Map<String,String> params = new HashMap<String,String>();
-        MyApplication.send(AppConstants.REQ_WEATHER_BY_GRID, Request.Method.GET, url, params, this);
+
+        MyApplication.send(AppConstants.REQ_WEATHER_BY_GRID, Request.Method.GET, url, params, this); // SingleTon Pattern
     }
 
     public void processResponse(int requestCode, int responseCode, String response) { // 기상청 날씨 서버로부터 응답을 받으면 호출됨
-        if (responseCode == 200) { // 응답 코드가 200이면
-            if (requestCode == AppConstants.REQ_WEATHER_BY_GRID) { // 요청 코드가 102면
+        if (responseCode == 200) {
+            if (requestCode == AppConstants.REQ_WEATHER_BY_GRID) {
 
-                // XML 응답 데이터를 자바 객체로 만듦
+                // XML 응답 데이터를 자바 객체로 생성
                 XmlParserCreator parserCreator = new XmlParserCreator() {
                     @Override
                     public XmlPullParser createParser() {
@@ -328,34 +329,15 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
                 // 자바 객체는 WeatherResult라는 객체로 정의
                 WeatherResult weatherResult = gsonXml.fromXml(response, WeatherResult.class);
 
-                // 현재 기준 시간
                 try {
-                    // 응답 받은 날씨 데이터는 로그로 출력해서 확인
-                    Date tmDate = AppConstants.dateFormat.parse(weatherResult.header.tm);
-                    String tmDateText  = AppConstants.dateFormat3.format(tmDate);
-                    println("기준 시간 : " + tmDateText);
-
-                    for (int i = 0; i < weatherResult.body.datas.size(); i++) {
-                        WeatherItem item = weatherResult.body.datas.get(i);
-                        println("#" + i + " 시간 : " + item.hour + "시, " + item.day + "일째");
-                        println("  날씨 : " + item.wfKor);
-                        println("  기온 : " + item.temp + " C");
-                        println("  강수확률 : " + item.pop + "%");
-
-                        println("디버그 1 : " + (int)Math.round(item.ws * 10));
-                        float ws = Float.valueOf(String.valueOf((int)Math.round(item.ws * 10))) / 10.0f;
-                        println("  풍속 : " + ws + " m/s");
-                    }
-
                     // 작성화면의 좌측 상단에 있는 날씨 아이콘에 현재 날씨 설정
                     WeatherItem item = weatherResult.body.datas.get(0);
                     currentWeather = item.wfKor;
                     if (writeFragment != null) {
-                        if(writeFragment.item == null) {
+                        if(writeFragment.item == null) { // 수정모드가 아닌 새 글 작성모드일 경우에만
                             writeFragment.setWeather(item.wfKor); // 기상청의 현재 날씨 문자열을 받아 아이콘을 설정함
                         }
                     }
-
                     // 위치를 한번 확인한 후에는 위치 요청 서비스를 중지함
                     if (locationCount > 0) {
                         stopLocationService();
@@ -403,13 +385,6 @@ public class MainActivity extends AppCompatActivity implements onTabItemSelected
             String country = address.getCountryName(); // 국가
             String adminArea = address.getAdminArea(); // 시/도
             println("주소 : " + country + " " + adminArea + " " + currentAddress);
-
-        /*
-        if(addresses != null && addresses.size() > 0) {
-            Address address = addresses.get(0);
-            String currentAddress = address.getAdminArea() + " " + address.getSubLocality(); // 시 군/구
-            println("주소 : " + currentAddress);
-         */
 
             if(writeFragment != null) {
                 writeFragment.setAddress(adminArea + " " + currentAddress);
